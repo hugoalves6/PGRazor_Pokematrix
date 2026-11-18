@@ -50,6 +50,7 @@ public final class GymAutomationSettings {
     public static boolean feedEnabled(){stopForCooldown();return preferences.effectiveFeed();}
     public static boolean deployEnabled(){stopForCooldown();return preferences.effectiveDeploy();}
     public static boolean overlayEnabled(){return preferences.overlay();}
+    public static void setOverlayEnabled(boolean on){set("Overlay",on);}
     /** Stop the whole run on cooldown while retaining its selected actions. */
     public static boolean stopForCooldown(){
         if(!preferences.running()||Cooldown.remaining()<=0)return false;

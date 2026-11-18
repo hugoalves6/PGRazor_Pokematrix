@@ -24,6 +24,18 @@
 
 - [@dhanush-c-c](https://github.com/dhanush-c-c): interface redesign and settings search ([#6](https://github.com/jpitty03/PGRazor/pull/6)), ART bridge build fix for Windows ([#5](https://github.com/jpitty03/PGRazor/pull/5)).
 
+## v0.3.4.1
+
+[Full release notes](docs/releases/v0.3.4.1.md)
+
+### Improvements & fixes
+
+- Buddy Emotion overlay is now a compact one-line badge (heart, EP, excited star, maintenance minutes); tap it for the full status.
+- The cooldown timer is smaller, and with "Show local time" on it shows the local time as a small second line instead of a separate overlay.
+- Gyms settings have a direct "Show Gym feeder map icon" switch.
+- Virtual Go Plus has a "Show VGP status text" switch, so the map can show only the VGP icon.
+- Double-tap on the game map asks Walk or Teleport, with "Don't ask again". Remembering Walk switches map tap to Walk; changing the Game map tap mode asks again.
+
 ## v0.3.4
 
 [Full release notes](docs/releases/v0.3.4.md)

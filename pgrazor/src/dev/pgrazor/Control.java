@@ -157,6 +157,11 @@ public final class Control {
     private static volatile int storageIvMode, storageIvFormat=3;
     private static volatile String storageIvStatus="";
     private static volatile int mapTapMode, mapTapEpoch;
+    private static volatile boolean mapTapTeleportNoAsk, vgpStatusText=true;
+    public static boolean mapTapTeleportNoAsk(){return mapTapTeleportNoAsk;}
+    public static void setMapTapTeleportNoAsk(boolean value){mapTapTeleportNoAsk=value;saveSettings();}
+    public static boolean vgpStatusText(){return vgpStatusText;}
+    public static void setVgpStatusText(boolean value){vgpStatusText=value;saveSettings();}
     private static final MapTapSequence mapTapSequence=new MapTapSequence();
     private static volatile boolean mapTapReady;
     private static volatile boolean spawnBooster,spawnReady;
@@ -1291,7 +1296,7 @@ public final class Control {
                 throwCurve=Boolean.parseBoolean(p.getProperty("curve","false"));
                 throwAlwaysHit=Boolean.parseBoolean(p.getProperty("throwAlwaysHit","false"));
                 throwAr=Boolean.parseBoolean(p.getProperty("throwAr","false"));
-                throwGrade=boundedSetting(p,"grade",3); throwVariety=boundedSetting(p,"throwVariety",3); mapTapMode=boundedSetting(p,"mapTap",3);
+                throwGrade=boundedSetting(p,"grade",3); throwVariety=boundedSetting(p,"throwVariety",3); mapTapMode=boundedSetting(p,"mapTap",3); mapTapTeleportNoAsk=Boolean.parseBoolean(p.getProperty("mapTapTeleportNoAsk","false")); vgpStatusText=Boolean.parseBoolean(p.getProperty("vgpStatusText","true"));
                 event("settings-restored","dismiss="+quickSummaryEnabled+" fastBall="+quickBallEnabled+" grade="+throwGrade+" variety="+throwVariety+" curve="+throwCurve+" mapTap="+mapTapMode+" cameraRelative=true heal="+healConfig());
             } catch(FileNotFoundException missing) {
                 // Defaults apply only until the user first saves a choice.
@@ -1392,7 +1397,7 @@ public final class Control {
         p.setProperty("autoDismiss",String.valueOf(quickSummaryEnabled)); p.setProperty("fastBall",String.valueOf(quickBallEnabled));
         p.setProperty("throwAr",String.valueOf(throwAr)); p.setProperty("curve",String.valueOf(throwCurve)); p.setProperty("grade",String.valueOf(throwGrade)); p.setProperty("throwVariety",String.valueOf(throwVariety));
         p.setProperty("throwAlwaysHit",String.valueOf(throwAlwaysHit));
-        p.setProperty("mapTap",String.valueOf(mapTapMode));
+        p.setProperty("mapTap",String.valueOf(mapTapMode));p.setProperty("mapTapTeleportNoAsk",String.valueOf(mapTapTeleportNoAsk));p.setProperty("vgpStatusText",String.valueOf(vgpStatusText));
         return p;
     }
     /** Writer sink: serializes to the captured AtomicFile off-thread, rolling back on failure. Never takes stateLock. */

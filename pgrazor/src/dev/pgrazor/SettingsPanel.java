@@ -406,7 +406,7 @@ final class SettingsPanel {
 
         LinearLayout map = group(loc, "Game map");
         mapTap = button("Game map tap: Do nothing"); map.addView(mapTap);
-        mapTap.setOnClickListener(v -> { Control.setMapTapMode((Control.mapTapMode()+1)%4); host.refresh(); });
+        mapTap.setOnClickListener(v -> { Control.setMapTapMode((Control.mapTapMode()+1)%4); Control.setMapTapTeleportNoAsk(false); host.refresh(); });
         spawnSwitch = switchRow(map, "Spawn booster (80 m)"); spawnSwitch.setChecked(Control.spawnBooster());
         spawnSwitch.setOnCheckedChangeListener((v,checked) -> { if(checked==Control.spawnBooster())return; Control.setSpawnBooster(spawnSwitch.isChecked()); });
         spawnStatus = caption(map, "");
@@ -556,6 +556,8 @@ final class SettingsPanel {
         LinearLayout vgpC=group(page,"Virtual Go Plus");
         vgpSwitch=switchRow(vgpC,"VGP overlay");vgpSwitch.setChecked(Control.vgpOverlay());
         vgpSwitch.setOnCheckedChangeListener((b,checked)->{if(checked!=Control.vgpOverlay())Control.setVgpOverlay(checked);host.refresh();});
+        Switch vgpTextSwitch=switchRow(vgpC,"Show VGP status text");vgpTextSwitch.setChecked(Control.vgpStatusText());
+        vgpTextSwitch.setOnCheckedChangeListener((b,checked)->{if(checked!=Control.vgpStatusText())Control.setVgpStatusText(checked);host.refresh();});
         String[] vgpLabels={"Nearby Pokémon","Nearby PokéStops","Push notifications"};
         for(int i=0;i<3;i++){final int bit=1<<i;CheckBox box=new CheckBox(activity);box.setText(vgpLabels[i]);box.setChecked((Control.vgpOptions()&bit)!=0);vgpChoices[i]=box;vgpC.addView(box);
             box.setOnClickListener(v->{Control.setVgpOptions(box.isChecked()?Control.vgpOptions()|bit:Control.vgpOptions()&~bit);
@@ -601,6 +603,8 @@ final class SettingsPanel {
 
         LinearLayout gymC = group(battleC, "Gyms");
         launch(gymC, "Gym Slotter & Berry Feeder", () -> GymAutomationSettings.show(activity));
+        CheckBox gymOverlay=new CheckBox(activity);gymOverlay.setText("Show Gym feeder map icon");gymOverlay.setChecked(GymAutomationSettings.overlayEnabled());gymC.addView(gymOverlay);
+        gymOverlay.setOnClickListener(v->GymAutomationSettings.setOverlayEnabled(gymOverlay.isChecked()));
         battleChoice(gymC,2,"Auto quick attack");
         battleChoice(gymC,3,"Auto charged attack");
         battleChoice(gymC,8,"Auto dodge");
