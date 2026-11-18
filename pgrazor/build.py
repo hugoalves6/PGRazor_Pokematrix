@@ -18,7 +18,7 @@ def source_fingerprints(root):
 
 def release_version(root):
     version = os.environ.get('PGRAZOR_VERSION', (root/'VERSION').read_text(encoding='utf-8').strip())
-    if not re.fullmatch(r'v?[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?', version):
+    if not re.fullmatch(r'v?[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:-[A-Za-z0-9.-]+)?', version):
         raise ValueError('Invalid PGRazor version')
     return 'v' + version.removeprefix('v')
 
