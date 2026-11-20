@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.5.1
+
+[Full release notes](docs/releases/v0.3.5.1.md)
+
+### Improvements & fixes
+
+- Based on PGRazor v0.3.5; all v0.3.4.1 fork changes (compact Buddy badge, smaller cooldown timer with local time, Gym feeder icon switch, VGP status text switch, double-tap Walk/Teleport choice) carried over to the redesigned interface.
+
 ## v0.3.5
 
 [Full release notes](docs/releases/v0.3.5.md)
