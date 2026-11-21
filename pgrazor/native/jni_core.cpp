@@ -10,6 +10,8 @@
 #include "runtime_transport_jni.h"
 #include "runtime_bootstrap.h"
 #include "runtime_host.h"
+#include "tm_shortcut.h"
+#include "tag_catch.h"
 
 namespace {
 
@@ -47,6 +49,24 @@ jlongArray JNICALL jni_runtime_health(JNIEnv *env,jclass){
     return result;
 }
 
+// Fast/Charged TM rows: [visible, x, y, count] x 3; read from the UI thread, no managed calls.
+jfloatArray JNICALL jni_tm_state(JNIEnv *env,jclass){
+    PgrTmRow rows[3];pgr_tm_state(rows);jfloat v[12];
+    for(int i=0;i<3;i++){v[i*4]=float(rows[i].visible);v[i*4+1]=rows[i].x;v[i*4+2]=rows[i].y;v[i*4+3]=float(rows[i].count);}
+    jfloatArray result=env->NewFloatArray(12);if(result)env->SetFloatArrayRegion(result,0,12,v);return result;
+}
+void JNICALL jni_tm_use(JNIEnv *,jclass,jint row){pgr_tm_request(row);}
+void JNICALL jni_tag_catch_config(JNIEnv *env,jclass,jstring config){
+    const char *text=config?env->GetStringUTFChars(config,nullptr):nullptr;
+    pgr_tag_catch_config(text);if(text)env->ReleaseStringUTFChars(config,text);
+}
+jstring JNICALL jni_calcy_rows(JNIEnv *env,jclass,jboolean request){
+    if(request){pgr_calcy_request();return nullptr;}
+    std::string rows;if(pgr_calcy_take(&rows))return nullptr;
+    return env->NewStringUTF(rows.c_str());
+}
+jstring JNICALL jni_tag_catch_tags(JNIEnv *env,jclass){char names[16384];pgr_tag_catch_tags(names,sizeof(names));return env->NewStringUTF(names);}
+
 const JNINativeMethod kMethods[] = {
     {const_cast<char *>("apiVersion"), const_cast<char *>("()I"),
      reinterpret_cast<void *>(&jni_api_version)},
@@ -55,6 +75,11 @@ const JNINativeMethod kMethods[] = {
     {const_cast<char *>("bootstrapProbe"),const_cast<char *>("()J"),reinterpret_cast<void *>(&jni_bootstrap_probe)},
     {const_cast<char *>("runtimeStart"),const_cast<char *>("(I)I"),reinterpret_cast<void *>(&jni_runtime_start)},
     {const_cast<char *>("runtimeHealth"),const_cast<char *>("()[J"),reinterpret_cast<void *>(&jni_runtime_health)},
+    {const_cast<char *>("tmState"),const_cast<char *>("()[F"),reinterpret_cast<void *>(&jni_tm_state)},
+    {const_cast<char *>("tmUse"),const_cast<char *>("(I)V"),reinterpret_cast<void *>(&jni_tm_use)},
+    {const_cast<char *>("tagCatchConfig"),const_cast<char *>("(Ljava/lang/String;)V"),reinterpret_cast<void *>(&jni_tag_catch_config)},
+    {const_cast<char *>("calcyRows"),const_cast<char *>("(Z)Ljava/lang/String;"),reinterpret_cast<void *>(&jni_calcy_rows)},
+    {const_cast<char *>("tagCatchTags"),const_cast<char *>("()Ljava/lang/String;"),reinterpret_cast<void *>(&jni_tag_catch_tags)},
 };
 
 } // namespace

@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.3.5.2
+
+[Full release notes](docs/releases/v0.3.5.2.md)
+
+### New features
+
+- TM shortcuts on the Pokémon screen (Fast/Charged TM icon before each move; uses the game's own TM flow).
+- VGP+ tag rules: "Catch only" and "Candy species" accept Pokémon storage tags (whole candy families, kept up to date), a candy-species berry, configurable "rare" criteria with their own berry, "Also catch rare Pokémon outside Catch only", and an overlay button.
+- Settings › Tools › "Export Pokémon for CalcyIV" (experimental CSV for CalcyIV's history import).
+
+### Improvements & fixes
+
+- VGP+ now reads wild Pokémon IVs from the encounter (IV rules never matched before).
+- IV line on the Pokémon screen: no longer hidden behind the model when opened from the Pokédex; updates after a power-up.
+- VGP with location spoofing off no longer waits forever for the location (unverified on affected devices).
+- Changing VGP+ tag rules re-checks Pokémon skipped under the old rules.
+
 ## v0.3.5.1
 
 [Full release notes](docs/releases/v0.3.5.1.md)

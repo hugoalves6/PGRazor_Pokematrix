@@ -31,6 +31,7 @@ public final class Pad {
     private final Rect appliedWindowBounds=new Rect();
     private LinearLayout joystickOverlay;
     private BerryOverlay encounterBerry;
+    private TmShortcutOverlay tmShortcuts;
     private Button cooldownTimer;
     // Small draggable overlay showing the local wall-clock time at the spoofed coordinates (not device time).
     private LocalTimeOverlay localTime;
@@ -57,6 +58,8 @@ public final class Pad {
     private QuickMenu quickMenu;
     // Draggable, position-persisting Keep All / transfer-rules overlay button.
     private TransferToggle transferToggle;
+    private TagCatchToggle tagCatchToggle;
+    private OverlayDrag tagCatchDrag;
     private OverlayDrag transferDrag;
     private GameRoutesOverlay gameRoutesOverlay;
     private OverlayDrag gameRoutesDrag;
@@ -145,6 +148,7 @@ public final class Pad {
         // Compact catching-berry overlay; the popup chooses owned berries and Off.
         encounterBerry=new BerryOverlay(activity,this::refresh);
         FrameLayout.LayoutParams berryLayout=new FrameLayout.LayoutParams(dp(90),dp(50),Gravity.RIGHT|Gravity.CENTER_VERTICAL);berryLayout.rightMargin=dp(10);overlays.addView(encounterBerry,berryLayout);encounterBerry.setVisibility(View.GONE);
+        tmShortcuts=new TmShortcutOverlay(activity,overlays);
 
         cooldownTimer=button("History  --:--");cooldownTimer.setTextSize(11);cooldownTimer.setPadding(dp(6),0,dp(6),0);cooldownTimer.setMinHeight(0);cooldownTimer.setMinimumHeight(0);cooldownTimer.setTypeface(SettingsUi.mono());cooldownTimer.setTextColor(accent());FrameLayout.LayoutParams timerLayout=new FrameLayout.LayoutParams(dp(128),dp(30),Gravity.TOP|Gravity.RIGHT);timerLayout.topMargin=dp(44);timerLayout.rightMargin=dp(12);overlays.addView(cooldownTimer,timerLayout);cooldownTimer.setOnClickListener(v->Cooldown.show(activity));cooldownDrag=OverlayDrag.attach(overlays,cooldownTimer,"cooldown");
 
@@ -192,6 +196,9 @@ public final class Pad {
         overlays.addView(shinyBadge,shinyLayout);shinyBadge.setVisibility(View.GONE);shinyBadge.setOnClickListener(v->{ShinyScanner.showFound();refresh();});shinyDrag=OverlayDrag.attach(overlays,shinyBadge,"shiny");
         transferToggle=new TransferToggle(host);FrameLayout.LayoutParams transferLayout=new FrameLayout.LayoutParams(dp(54),dp(54),Gravity.TOP|Gravity.LEFT);transferLayout.leftMargin=dp(12);transferLayout.topMargin=dp(300);overlays.addView(transferToggle,transferLayout);transferToggle.setOnClickListener(v->{Control.setTransferKeepAll(!Control.transferKeepAll());refresh();});
         transferDrag=OverlayDrag.attach(overlays,transferToggle,"transfer");transferToggle.setVisibility(View.GONE);
+        tagCatchToggle=new TagCatchToggle(host);FrameLayout.LayoutParams tagLayout=new FrameLayout.LayoutParams(dp(54),dp(54),Gravity.TOP|Gravity.LEFT);tagLayout.leftMargin=dp(72);tagLayout.topMargin=dp(156);overlays.addView(tagCatchToggle,tagLayout);
+        tagCatchToggle.setOnClickListener(v->{TagCatchSettings.setActive(!TagCatchSettings.active());refresh();});
+        tagCatchDrag=OverlayDrag.attach(overlays,tagCatchToggle,"tag-catch");tagCatchToggle.setVisibility(View.GONE);
         gameRoutesOverlay=new GameRoutesOverlay(activity);
         FrameLayout.LayoutParams routesLayout=new FrameLayout.LayoutParams(dp(48),dp(48),Gravity.TOP|Gravity.RIGHT);
         routesLayout.rightMargin=dp(14);routesLayout.topMargin=dp(100);overlays.addView(gameRoutesOverlay,routesLayout);
@@ -242,6 +249,24 @@ public final class Pad {
             if(icon!=null&&icon.getWidth()>0&&icon.getHeight()>0){float box=30f,ratio=Math.min(box/icon.getWidth(),box/icon.getHeight()),w=icon.getWidth()*ratio,h=icon.getHeight()*ratio;dst.set(27-w/2f,20-h/2f,27+w/2f,20+h/2f);canvas.drawBitmap(icon,null,dst,art);}
             else{paint.setColor(on?SettingsUi.success():SettingsUi.faint());canvas.drawCircle(27,19,12,paint);paint.setColor(surface());paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(2.5f);canvas.drawArc(19,11,35,27,-55,290,false,paint);canvas.drawLine(27,7,27,19,paint);}
             paint.setStyle(Paint.Style.FILL);paint.setColor(on?accent():SettingsUi.faint());paint.setTextSize(9.5f);paint.setTypeface(SettingsUi.mono());paint.setTextAlign(Paint.Align.CENTER);canvas.drawText(on?"ON":"OFF",27,49,paint);
+            canvas.restore();}
+    }
+    /** Tag catch on/off: a Pinap with its right half tinted silver for the Silver Pinap (no bundled art). */
+    private final class TagCatchToggle extends View {
+        private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint art=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG),silver=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
+        private final Bitmap pinap=decodeMapIcon("berry-705.png");
+        private final RectF dst=new RectF();
+        TagCatchToggle(Context context){super(context);setFocusable(true);setClickable(true);
+            ColorMatrix m=new ColorMatrix();m.setSaturation(0);ColorMatrix bright=new ColorMatrix(new float[]{1.1f,0,0,0,40, 0,1.1f,0,0,40, 0,0,1.2f,0,55, 0,0,0,1,0});m.postConcat(bright);silver.setColorFilter(new ColorMatrixColorFilter(m));}
+        protected void onDraw(Canvas canvas){super.onDraw(canvas);boolean on=TagCatchSettings.active();canvas.save();canvas.scale(getWidth()/54f,getHeight()/54f);
+            paint.setStyle(Paint.Style.FILL);paint.setColor(surface());canvas.drawRoundRect(1,1,53,53,13,13,paint);
+            paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(1.2f);paint.setColor(on?accent():SettingsUi.border());canvas.drawRoundRect(1,1,53,53,13,13,paint);
+            if(pinap!=null&&pinap.getWidth()>0&&pinap.getHeight()>0){float box=32f,ratio=Math.min(box/pinap.getWidth(),box/pinap.getHeight()),w=pinap.getWidth()*ratio,h=pinap.getHeight()*ratio;dst.set(27-w/2f,20-h/2f,27+w/2f,20+h/2f);
+                art.setAlpha(on?255:120);silver.setAlpha(on?255:120);
+                canvas.save();canvas.clipRect(0,0,27,54);canvas.drawBitmap(pinap,null,dst,art);canvas.restore();
+                canvas.save();canvas.clipRect(27,0,54,54);canvas.drawBitmap(pinap,null,dst,silver);canvas.restore();}
+            paint.setStyle(Paint.Style.FILL);paint.setColor(on?accent():SettingsUi.faint());paint.setTextSize(9.5f);paint.setTypeface(SettingsUi.mono());paint.setTextAlign(Paint.Align.CENTER);canvas.drawText(on?"TAGS":"OFF",27,49,paint);
             canvas.restore();}
     }
     private final class VgpMarker extends View {
@@ -296,7 +321,7 @@ public final class Pad {
         Rect previousSafe=appliedWindowBounds.isEmpty()?safe:new Rect(appliedWindowBounds);
         appliedWindowBounds.set(safe);appliedWindowWidth=parent.getWidth();appliedWindowHeight=parent.getHeight();
         appliedUiScale=percent;float scale=percent/100f;
-        for(View view:new View[]{launcher,joystickOverlay,cooldownTimer,localTime,vgpToggle,vgpActivity,vgpMarker,mapCatchBadge,transferToggle,gameRoutesOverlay,gymFeedOverlay,gymAutomationStatus,shundoOverlay,shinyBadge,shinyMark,encounterBadge}){
+        for(View view:new View[]{launcher,joystickOverlay,cooldownTimer,localTime,vgpToggle,vgpActivity,vgpMarker,mapCatchBadge,transferToggle,tagCatchToggle,gameRoutesOverlay,gymFeedOverlay,gymAutomationStatus,shundoOverlay,shinyBadge,shinyMark,encounterBadge}){
             if(view==null)continue;
             float x=view.getX(),y=view.getY();
             int oldWidth=OverlayDrag.visualWidth(view),oldHeight=OverlayDrag.visualHeight(view);
@@ -307,6 +332,7 @@ public final class Pad {
         }
         if(cooldownDrag!=null)cooldownDrag.refreshBounds();if(localTimeDrag!=null)localTimeDrag.refreshBounds();if(vgpDrag!=null)vgpDrag.refreshBounds();
         if(transferDrag!=null)transferDrag.refreshBounds();
+        if(tagCatchDrag!=null)tagCatchDrag.refreshBounds();
         if(gameRoutesDrag!=null)gameRoutesDrag.refreshBounds();
         if(gymFeedDrag!=null)gymFeedDrag.refreshBounds();
         if(encounterBerry!=null)encounterBerry.applyUiScale(scale);
@@ -348,6 +374,8 @@ public final class Pad {
         if(vgpActivity!=null){vgpActivity.setVisibility(Control.vgpOverlayVisible()&&Control.vgpStatusText()&&!settings.isVisible()&&!(quickMenu!=null&&quickMenu.isShowing())?View.VISIBLE:View.GONE);setTextIfChanged(vgpActivity,"VGP  |  "+Control.vgpStatus());}
         if(mapCatchBadge!=null)mapCatchBadge.refresh(!settings.isVisible()&&!(quickMenu!=null&&quickMenu.isShowing())&&!Control.catchScreenVisible());
         if(vgpMarker!=null){boolean show=Control.vgpTargetVisible()&&!settings.isVisible();vgpMarker.setVisibility(show?View.VISIBLE:View.GONE);if(show){vgpMarker.setX(Control.vgpTargetX()*parent.getWidth()-dp(19)*vgpMarker.getScaleX());vgpMarker.setY(Control.vgpTargetY()*parent.getHeight()-dp(36)-dp(46)*vgpMarker.getScaleY());vgpMarker.invalidate();}}
+        TagCatchSettings.push();
+        if(tagCatchToggle!=null){boolean on=TagCatchSettings.active();tagCatchToggle.setVisibility(TagCatchSettings.overlay()&&Control.vgpOverlayVisible()&&!settings.isVisible()&&!(quickMenu!=null&&quickMenu.isShowing())?View.VISIBLE:View.GONE);tagCatchToggle.setContentDescription("VGP+ tag rules "+(on?"on; tap to turn off":"off; tap to turn on")+". Drag to reposition.");tagCatchToggle.invalidate();}
         if(transferToggle!=null){transferToggle.setVisibility(Control.transferOverlayVisible()&&!settings.isVisible()&&!(quickMenu!=null&&quickMenu.isShowing())?View.VISIBLE:View.GONE);transferToggle.setContentDescription(transferToggleDescription());transferToggle.invalidate();}
 
         String routeReward=Control.takeGameRoutesRewardNotice();
@@ -370,6 +398,7 @@ public final class Pad {
         // The launcher's status dot shows whether spoofing is on; redraw it only when that changes.
         if (launcher != null && launcherSpoofing != Control.desiredEnabled()) { launcherSpoofing = Control.desiredEnabled(); launcher.invalidate(); }
         if(encounterBerry!=null)encounterBerry.refresh();
+        if(tmShortcuts!=null)tmShortcuts.refresh(Control.tmShortcuts()&&!overlaysHidden&&!settings.isVisible()&&!(quickMenu!=null&&quickMenu.isShowing()));
         if(quickMenu!=null)quickMenu.onRefresh();
         // The hidden panel is GONE; openSettings() refreshes it immediately after show().
         if(settings.isVisible())settings.refresh();
@@ -580,7 +609,7 @@ public final class Pad {
         if (closed) return;
         closed = true;if(stopRouteDialog!=null)stopRouteDialog.dismiss(); stick.release(true); Control.suspendForBackground(); handler.removeCallbacks(tick);
         if(quickMenu!=null){quickMenu.destroy();quickMenu=null;}
-        if(cooldownDrag!=null){cooldownDrag.detach();cooldownDrag=null;}if(vgpDrag!=null){vgpDrag.detach();vgpDrag=null;}if(transferDrag!=null){transferDrag.detach();transferDrag=null;}if(gameRoutesDrag!=null){gameRoutesDrag.detach();gameRoutesDrag=null;}
+        if(cooldownDrag!=null){cooldownDrag.detach();cooldownDrag=null;}if(vgpDrag!=null){vgpDrag.detach();vgpDrag=null;}if(transferDrag!=null){transferDrag.detach();transferDrag=null;}if(tagCatchDrag!=null){tagCatchDrag.detach();tagCatchDrag=null;}if(gameRoutesDrag!=null){gameRoutesDrag.detach();gameRoutesDrag=null;}
         if(localTimeDrag!=null){localTimeDrag.detach();localTimeDrag=null;}if(localTime!=null){localTime.close();overlays.removeView(localTime);localTime=null;}
         if(buddyEmotionDrag!=null){buddyEmotionDrag.detach();buddyEmotionDrag=null;}
         if(buddyEmotionStatus!=null)overlays.removeView(buddyEmotionStatus);
@@ -594,7 +623,7 @@ public final class Pad {
         if(gymAutomationStatus!=null){overlays.removeView(gymAutomationStatus);gymAutomationStatus=null;}
         if(gymFeedOverlay!=null){gymFeedOverlay.close();overlays.removeView(gymFeedOverlay);gymFeedOverlay=null;}
         settings.close();if(hideOverlaysDialog!=null)hideOverlaysDialog.dismiss();
-        parent.removeView(settings.view());overlays.removeView(launcher);overlays.removeView(joystickOverlay);if(encounterBerry!=null){encounterBerry.close();overlays.removeView(encounterBerry);}if(cooldownTimer!=null)overlays.removeView(cooldownTimer);if(vgpToggle!=null)overlays.removeView(vgpToggle);if(vgpActivity!=null)overlays.removeView(vgpActivity);if(vgpMarker!=null)overlays.removeView(vgpMarker);if(mapCatchBadge!=null){overlays.removeView(mapCatchBadge);mapCatchBadge=null;}if(transferToggle!=null)overlays.removeView(transferToggle);if(gameRoutesOverlay!=null){gameRoutesOverlay.close();overlays.removeView(gameRoutesOverlay);}
+        parent.removeView(settings.view());overlays.removeView(launcher);overlays.removeView(joystickOverlay);if(encounterBerry!=null){encounterBerry.close();overlays.removeView(encounterBerry);}if(tmShortcuts!=null){tmShortcuts.close();tmShortcuts=null;}if(cooldownTimer!=null)overlays.removeView(cooldownTimer);if(vgpToggle!=null)overlays.removeView(vgpToggle);if(vgpActivity!=null)overlays.removeView(vgpActivity);if(vgpMarker!=null)overlays.removeView(vgpMarker);if(mapCatchBadge!=null){overlays.removeView(mapCatchBadge);mapCatchBadge=null;}if(transferToggle!=null)overlays.removeView(transferToggle);if(tagCatchToggle!=null)overlays.removeView(tagCatchToggle);if(gameRoutesOverlay!=null){gameRoutesOverlay.close();overlays.removeView(gameRoutesOverlay);}
         parent.removeView(overlays);if(unhideWatcher!=null)parent.removeView(unhideWatcher);
         if(blackScreen!=null){blackScreen.setOnClickListener(null);parent.removeView(blackScreen);blackScreen=null;blackHint=null;}
         ShundoSniper.setDark(false);  // leaving the game ends the black screen; it is not brought back on return

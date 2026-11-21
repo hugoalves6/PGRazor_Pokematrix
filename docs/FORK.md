@@ -64,6 +64,28 @@ Each item lists every place it touches, so it can be re-applied by hand.
    `SettingsPanel`: cycling "Game map tap" also clears the remembered choice.
    `SettingsBackupRules`: key in `SETTINGS` and `BOOLEANS`.
 
+7. **TM shortcuts on the Pokémon screen.**
+   New `native/tm_shortcut.{h,cpp}` (weak ring of noted `PokemonInfoPanel`s, row positions, `ApplyRerollItemServiceFactory.Create`)
+   and `TmShortcutOverlay.java`. `iv_display.cpp` `hook_owned` calls `pgr_tm_note_panel`; `encounter_host.cpp` ticks `pgr_tm_tick`;
+   `jni_core.cpp` `tmState`/`tmUse`; `NativeCore`; `Pad` (create/refresh/close); `Control` `tmShortcuts`; `SettingsPanel` checkbox;
+   `SettingsBackupRules` key; assets `item-1201.png`/`item-1202.png` + `provenance.json`. CMake: source + `-fexceptions` list.
+
+8. **VGP+ tag rules.**
+   New `native/tag_catch.{h,cpp}` (tag read via `ITaggingRpcService`, families via `IGameMasterData.Get_PokemonSettings`, rare rules,
+   `pgr_encounter_pokemon`, config revision) and `TagCatchSettings.java` (store, VGP+ UI block, tag picker).
+   `smart_catch.cpp` `pgr_smart_plan`: encounter Pokémon, `pgr_tag_rules`, Catch only/also-rare, candy and rare berries (decide() with premium=0).
+   `vgp_controller.cpp`: discovery prefilter via `pgr_tag_catch_prefilter`, `POL->reset` on `pgr_tag_catch_revision` change.
+   `PokemonSpeciesDialog.showWithTags` (extra category entry, count text); `SmartCatchSettings` Candy/Catch only buttons and populate;
+   `Pad` `TagCatchToggle` + drag key `tag-catch` (`SettingsBackup`, `LogExport`, `SettingsBackupRules`); `Control` read/write;
+   `jni_core.cpp` `tagCatchConfig`/`tagCatchTags`; CMake source + `-fexceptions`.
+
+9. **CalcyIV export.** `tag_catch.cpp` `build_calcy` + `pgr_calcy_request/take`; `jni_core.cpp` `calcyRows`;
+   `CalcyExport.java`; `GpxDocuments.create(..., mime, ...)`; `SettingsPanel` Tools entry.
+
+10. **Upstream bug fixes.** `iv_panel.cpp` `draw_in_front` refreshes the nested canvas sorting order on every show;
+    `iv_display.cpp` `pgr_iv_owned_refresh` (called from `tm_shortcut.cpp` `watch_cp` on a CP change);
+    `GameLocationDelivery` provider proxy feeds `Control.observeRealCoordinate`.
+
 Conflict hot spots on upstream updates: `Pad.java` (setup line for the timer,
 the heartbeat block), `Control.java` (settings load/save lines) and
-`SettingsBackupRules.java` (the long key lists — re-add our two keys).
+`SettingsBackupRules.java` (the long key lists — re-add our keys), `SmartCatchSettings.java`, `smart_catch.cpp` `pgr_smart_plan`, `vgp_controller.cpp` discovery loop.

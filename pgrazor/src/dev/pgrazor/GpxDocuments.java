@@ -40,8 +40,13 @@ public final class GpxDocuments extends Fragment {
 
     /** Opens the system picker to create a writable document (export) with a suggested file name. */
     public static void create(Activity activity, String suggestedName, Callback callback) {
+        create(activity, suggestedName, "application/gpx+xml", callback);
+    }
+
+    /** As create(), for another document type. */
+    public static void create(Activity activity, String suggestedName, String mimeType, Callback callback) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-            .addCategory(Intent.CATEGORY_OPENABLE).setType("application/gpx+xml")
+            .addCategory(Intent.CATEGORY_OPENABLE).setType(mimeType)
             .putExtra(Intent.EXTRA_TITLE, suggestedName);
         launch(activity, intent, callback);
     }

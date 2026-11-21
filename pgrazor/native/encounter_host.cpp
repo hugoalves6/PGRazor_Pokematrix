@@ -56,6 +56,8 @@
 #include "research.h"
 #include "route_gift.h"
 #include "storage_iv.h"
+#include "tm_shortcut.h"
+#include "tag_catch.h"
 #include "cutscene_skip.h"
 #include "rocket_swap.h"
 #include "smart_battle.h"
@@ -2551,6 +2553,8 @@ static int api_tick(uint64_t proven_tid) {
     pgr_route_gift_tick(os_tid, &g_md);
   }
   pgr_storage_iv_tick(os_tid, &g_md);
+  pgr_tm_tick(os_tid, &g_md);
+  pgr_tag_catch_tick(os_tid, &g_md);
   pgr_cutscene_skip_tick(os_tid, &g_md);
   pgr_rocket_swap_tick(os_tid);
   pgr_smart_battle_tick(os_tid, &g_md);

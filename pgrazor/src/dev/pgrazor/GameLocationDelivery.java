@@ -418,6 +418,18 @@ public final class GameLocationDelivery {
                         fault instanceof InvocationTargetException ? unwrap((InvocationTargetException) fault) : fault);
                 }
             }
+            // Real fixes reach the game here even when the Location getter hooks never fire (seen on newer
+            // Android builds), and VGP needs a known position while spoofing is off.
+            if (methodName.equals("onProviderLocation") && args != null) {
+                try {
+                    for (Object arg : args) if (arg instanceof Location) {
+                        Location fix = (Location) arg;
+                        Control.observeRealCoordinate(true, fix.getLatitude());
+                        Control.observeRealCoordinate(false, fix.getLongitude());
+                        break;
+                    }
+                } catch (Throwable ignored) { /* Telemetry cannot drop the original callback. */ }
+            }
             try {
                 return method.invoke(original, args);
             } catch (InvocationTargetException error) {

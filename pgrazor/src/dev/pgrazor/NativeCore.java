@@ -26,4 +26,16 @@ public final class NativeCore {
 
     /** Atomic runtime counters only; safe off the Unity thread, never invokes game methods. */
     public static native long[] runtimeHealth();
+
+    /** Fast/Charged TM rows on the Pokemon screen: [visible, x, y, count] x 3, positions as screen fractions. */
+    public static native float[] tmState();
+    /** Starts the game's TM flow for row 0 (Fast) or 1/2 (Charged). */
+    public static native void tmUse(int row);
+
+    /** Tag catch config (TagCatchSettings.config); applied by the owner-thread tick. */
+    public static native void tagCatchConfig(String config);
+    /** Newline-joined names of the player's own Pokemon tags, as last read. */
+    public static native String tagCatchTags();
+    /** CalcyIV export: true requests a storage snapshot (returns null); false polls (null while pending). */
+    public static native String calcyRows(boolean request);
 }

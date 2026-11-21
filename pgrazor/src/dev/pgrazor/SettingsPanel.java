@@ -541,12 +541,15 @@ final class SettingsPanel {
         ivCatchMode.setOnClickListener(v -> { Control.setIvCatchMode(Control.nextIvMode(Control.ivCatchMode())); host.refresh(); });
         ivOwnedMode = button(""); iv.addView(ivOwnedMode);
         ivOwnedMode.setOnClickListener(v -> { Control.setIvOwnedMode(Control.nextIvMode(Control.ivOwnedMode())); host.refresh(); });
+        CheckBox tmBox=new CheckBox(activity);tmBox.setText("TM shortcuts on the Pokémon screen");tmBox.setChecked(Control.tmShortcuts());iv.addView(tmBox);
+        tmBox.setOnCheckedChangeListener((b,checked)->{if(checked!=Control.tmShortcuts())Control.setTmShortcuts(checked);host.refresh();});
         storageIv = button(""); iv.addView(storageIv);
         storageIv.setOnClickListener(v -> { Control.setStorageIvMode(Control.nextIvMode(Control.storageIvMode())); host.refresh(); });
         ivStatus = caption(iv, "");
 
         LinearLayout tools = group(page, "Tools");
         launch(tools, "Mass Evolve", () -> BatchEvolutionSettings.show(activity));
+        launch(tools, "Export Pokémon for CalcyIV", () -> CalcyExport.start(activity));
     }
 
     private void buildGoPlusPage() {

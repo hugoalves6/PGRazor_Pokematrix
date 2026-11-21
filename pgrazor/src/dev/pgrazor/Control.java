@@ -157,10 +157,12 @@ public final class Control {
     private static volatile int storageIvMode, storageIvFormat=3;
     private static volatile String storageIvStatus="";
     private static volatile int mapTapMode, mapTapEpoch;
-    private static volatile boolean mapTapTeleportNoAsk, vgpStatusText=true;
+    private static volatile boolean mapTapTeleportNoAsk, vgpStatusText=true, tmShortcuts=true;
     public static boolean mapTapTeleportNoAsk(){return mapTapTeleportNoAsk;}
     public static void setMapTapTeleportNoAsk(boolean value){mapTapTeleportNoAsk=value;saveSettings();}
     public static boolean vgpStatusText(){return vgpStatusText;}
+    public static boolean tmShortcuts(){return tmShortcuts;}
+    public static void setTmShortcuts(boolean value){tmShortcuts=value;saveSettings();}
     public static void setVgpStatusText(boolean value){vgpStatusText=value;saveSettings();}
     private static final MapTapSequence mapTapSequence=new MapTapSequence();
     private static volatile boolean mapTapReady;
@@ -1191,6 +1193,7 @@ public final class Control {
             quickMenuHidden=0;
             idleWalking=false;engine.setIdleWalking(false);
             SmartCatchSettings.read(new Properties());
+            TagCatchSettings.read(new Properties());
             GymAutomationSettings.read(new Properties());
             AutoRaid.read(new Properties());
             BuddyEmotionSettings.read(new Properties());
@@ -1200,6 +1203,7 @@ public final class Control {
             try(FileInputStream in=settingsFile.openRead()) {
                 Properties p=new Properties(); p.load(in);
                 SmartCatchSettings.read(p);
+                TagCatchSettings.read(p);
                 GymAutomationSettings.read(p);
                 AutoRaid.read(p);
                 BuddyEmotionSettings.read(p);
@@ -1296,7 +1300,7 @@ public final class Control {
                 throwCurve=Boolean.parseBoolean(p.getProperty("curve","false"));
                 throwAlwaysHit=Boolean.parseBoolean(p.getProperty("throwAlwaysHit","false"));
                 throwAr=Boolean.parseBoolean(p.getProperty("throwAr","false"));
-                throwGrade=boundedSetting(p,"grade",3); throwVariety=boundedSetting(p,"throwVariety",3); mapTapMode=boundedSetting(p,"mapTap",3); mapTapTeleportNoAsk=Boolean.parseBoolean(p.getProperty("mapTapTeleportNoAsk","false")); vgpStatusText=Boolean.parseBoolean(p.getProperty("vgpStatusText","true"));
+                throwGrade=boundedSetting(p,"grade",3); throwVariety=boundedSetting(p,"throwVariety",3); mapTapMode=boundedSetting(p,"mapTap",3); mapTapTeleportNoAsk=Boolean.parseBoolean(p.getProperty("mapTapTeleportNoAsk","false")); tmShortcuts=Boolean.parseBoolean(p.getProperty("tmShortcuts","true")); vgpStatusText=Boolean.parseBoolean(p.getProperty("vgpStatusText","true"));
                 event("settings-restored","dismiss="+quickSummaryEnabled+" fastBall="+quickBallEnabled+" grade="+throwGrade+" variety="+throwVariety+" curve="+throwCurve+" mapTap="+mapTapMode+" cameraRelative=true heal="+healConfig());
             } catch(FileNotFoundException missing) {
                 // Defaults apply only until the user first saves a choice.
@@ -1357,6 +1361,7 @@ public final class Control {
     private static Properties settingsSnapshot() {
         Properties p=new Properties();
         SmartCatchSettings.write(p);
+        TagCatchSettings.write(p);
         GymAutomationSettings.write(p);
         AutoRaid.write(p);
         BuddyEmotionSettings.write(p);
@@ -1397,7 +1402,7 @@ public final class Control {
         p.setProperty("autoDismiss",String.valueOf(quickSummaryEnabled)); p.setProperty("fastBall",String.valueOf(quickBallEnabled));
         p.setProperty("throwAr",String.valueOf(throwAr)); p.setProperty("curve",String.valueOf(throwCurve)); p.setProperty("grade",String.valueOf(throwGrade)); p.setProperty("throwVariety",String.valueOf(throwVariety));
         p.setProperty("throwAlwaysHit",String.valueOf(throwAlwaysHit));
-        p.setProperty("mapTap",String.valueOf(mapTapMode));p.setProperty("mapTapTeleportNoAsk",String.valueOf(mapTapTeleportNoAsk));p.setProperty("vgpStatusText",String.valueOf(vgpStatusText));
+        p.setProperty("mapTap",String.valueOf(mapTapMode));p.setProperty("mapTapTeleportNoAsk",String.valueOf(mapTapTeleportNoAsk));p.setProperty("vgpStatusText",String.valueOf(vgpStatusText));p.setProperty("tmShortcuts",String.valueOf(tmShortcuts));
         return p;
     }
     /** Writer sink: serializes to the captured AtomicFile off-thread, rolling back on failure. Never takes stateLock. */

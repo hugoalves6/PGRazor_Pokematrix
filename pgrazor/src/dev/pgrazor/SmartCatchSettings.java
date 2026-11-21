@@ -32,6 +32,7 @@ public final class SmartCatchSettings {
     static String catchSpecies(){return preferences.catchSpecies();}
     static void setCatchSpecies(String value){set("CatchSpecies",value);}
     private static String count(String ids,String none){return ids.isEmpty()?none:ids.split(",").length+" selected";}
+    private static String count(String ids,String tags,String none){int t=TagCatchSettings.count(tags);if(t==0)return count(ids,none);return (ids.isEmpty()?"":ids.split(",").length+" species + ")+t+(t==1?" tag":" tags");}
     private static void set(String key,Object value){preferences.set(key,String.valueOf(value));persist();}
     private static void persist(){Control.saveSettings();}
     public static Runnable populate(Activity activity,LinearLayout body){
@@ -49,7 +50,7 @@ public final class SmartCatchSettings {
             set("AutoBallTarget",next);autoTarget.setText("VGP+ auto ball target: "+next+"%");});
         int berryIndex=0;for(int i=0;i<BERRIES.length;i++)if(BERRIES[i]==preferences.berry())berryIndex=i;
         row(activity,options,"Standard berry",BERRY_NAMES,berryIndex,index->{set("Berry",BERRIES[index]);});
-        CheckBox special=new CheckBox(ui);special.setText("Shiny or IV ≥90%: Ultra Ball + Golden Razz");special.setChecked(preferences.premium());options.addView(special);
+        CheckBox special=new CheckBox(ui);special.setText("Rare Pokémon: Ultra Ball + rare berry (criteria below)");special.setChecked(preferences.premium());options.addView(special);
         special.setOnCheckedChangeListener((v,on)->{set("Premium",on);});
         input(activity,options,"High CP threshold (0–10000)",String.valueOf(preferences.highCp()),value->{int n=bounded(value,10000);set("HighCp",n);},true);
         input(activity,options,"High level threshold (0–50)",String.valueOf(preferences.highLevel()),value->{int n=bounded(value,50);set("HighLevel",n);},true);
@@ -64,15 +65,16 @@ public final class SmartCatchSettings {
         CheckBox gymSpin=new CheckBox(ui);gymSpin.setText("Auto-spin Gym discs");gymSpin.setChecked(preferences.spinGyms());options.addView(gymSpin);
         TextView gymSpinHelp=new TextView(ui);gymSpinHelp.setText("While VGP is running on the map, spin nearby Gym discs of any team within 80 m when the item bag has room.");options.addView(gymSpinHelp);
         gymSpin.setOnCheckedChangeListener((v,on)->{if(on!=preferences.spinGyms())set("SpinGyms",on);});
-        TextView candy=button(options,"Candy species (Pinap): "+count(preferences.candySpecies(),"None"));
-        candy.setOnClickListener(v->SmartCatchSpeciesDialog.show(activity,()->candy.setText("Candy species (Pinap): "+count(preferences.candySpecies(),"None"))));
+        TextView candy=button(options,"Candy species: "+count(preferences.candySpecies(),TagCatchSettings.candyTags(),"None"));
+        candy.setOnClickListener(v->SmartCatchSpeciesDialog.showCandy(activity,()->candy.setText("Candy species: "+count(preferences.candySpecies(),TagCatchSettings.candyTags(),"None"))));
         CheckBox shinyOnly=new CheckBox(ui);shinyOnly.setText("Catch only shinies");shinyOnly.setChecked(preferences.shinyOnly());options.addView(shinyOnly);
         TextView shinyOnlyHelp=new TextView(ui);shinyOnlyHelp.setText("VGP+ still opens every Pokémon to see whether it is shiny, but throws only at shinies and leaves the rest on the map. Each one it opens counts as an encounter.");options.addView(shinyOnlyHelp);
         shinyOnly.setOnCheckedChangeListener((v,on)->{if(on!=preferences.shinyOnly())set("ShinyOnly",on);});
-        TextView only=button(options,"Catch only: "+count(preferences.catchSpecies(),"All species"));
+        TextView only=button(options,"Catch only: "+count(preferences.catchSpecies(),TagCatchSettings.catchTags(),"All species"));
         TextView onlyHelp=new TextView(ui);onlyHelp.setText("When species are selected, VGP+ catches only those and leaves every other Pokémon on the map, shiny or not. With \"Catch only shinies\" on as well, it catches only shinies of those species.");options.addView(onlyHelp);
-        only.setOnClickListener(v->SmartCatchSpeciesDialog.showCatchOnly(activity,()->only.setText("Catch only: "+count(preferences.catchSpecies(),"All species"))));
-        Runnable refresh=()->{mode.setChecked(preferences.enabled());gymSpin.setChecked(preferences.spinGyms());auto.setChecked(preferences.autoBall());SettingsUi.enabled(mode,Control.vgpOverlay());SettingsUi.enabled(options,Control.vgpOverlay()&&preferences.enabled());if(Control.vgpOverlay()&&preferences.enabled()){SettingsUi.enabled(autoTarget,preferences.autoBall());SettingsUi.enabled(standard,!preferences.autoBall());SettingsUi.enabled(rating,preferences.variety()==0);}};
+        only.setOnClickListener(v->SmartCatchSpeciesDialog.showCatchOnly(activity,()->only.setText("Catch only: "+count(preferences.catchSpecies(),TagCatchSettings.catchTags(),"All species"))));
+        Runnable tagRefresh=TagCatchSettings.populate(activity,options);
+        Runnable refresh=()->{tagRefresh.run();mode.setChecked(preferences.enabled());gymSpin.setChecked(preferences.spinGyms());auto.setChecked(preferences.autoBall());SettingsUi.enabled(mode,Control.vgpOverlay());SettingsUi.enabled(options,Control.vgpOverlay()&&preferences.enabled());if(Control.vgpOverlay()&&preferences.enabled()){SettingsUi.enabled(autoTarget,preferences.autoBall());SettingsUi.enabled(standard,!preferences.autoBall());SettingsUi.enabled(rating,preferences.variety()==0);}};
         afterVariety[0]=refresh;
         auto.setOnCheckedChangeListener((v,on)->{if(on!=preferences.autoBall())set("AutoBall",on);refresh.run();});
         mode.setOnCheckedChangeListener((v,on)->{if(on!=preferences.enabled())set("Enabled",on);refresh.run();});
@@ -120,15 +122,15 @@ public final class SmartCatchSettings {
 /** Feature-specific entry points; all species lists share PokemonSpeciesDialog. */
 final class SmartCatchSpeciesDialog {
     private SmartCatchSpeciesDialog() {}
-    static void show(Activity activity, Runnable onSaved) {
-        PokemonSpeciesDialog.show(activity, "Candy species (Pinap)", "species", 200,
+    static void showCandy(Activity activity, Runnable onSaved) {
+        PokemonSpeciesDialog.showWithTags(activity, "Candy species", "species", 200,
             SmartCatchSettings::candySpecies, SmartCatchSettings::setCandySpecies, onSaved,
-            "None (no candy species selected)", null);
+            "None (no candy species selected)", TagCatchSettings::candyTags, TagCatchSettings::setCandyTags);
     }
     static void showCatchOnly(Activity activity, Runnable onSaved) {
-        PokemonSpeciesDialog.show(activity, "Catch only these species", "species", 200,
+        PokemonSpeciesDialog.showWithTags(activity, "Catch only these species", "species", 200,
             SmartCatchSettings::catchSpecies, SmartCatchSettings::setCatchSpecies, onSaved,
-            "All species (no selection)", null);
+            "All species (no selection)", TagCatchSettings::catchTags, TagCatchSettings::setCatchTags);
     }
     static void show(Activity activity, String title, String noun, int max,
                      java.util.function.Supplier<String> load, java.util.function.Consumer<String> save, Runnable onSaved) {
