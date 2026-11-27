@@ -1,0 +1,179 @@
+name: Android release (non-root and rooted)
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag (for example v0.1.0)
+        required: true
+        type: string
+      publish:
+        description: Publish a full GitHub release
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  build:
+    # GitHub draft-release assets require push access; the input remains unpublished.
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PGRAZOR_BUILD_TOOLS: 36.0.0
+      PGRAZOR_ANDROID_PLATFORM: android-36
+      PGRAZOR_KEY_ALIAS: ${{ secrets.PGRAZOR_KEY_ALIAS }}
+      PGRAZOR_STORE_PASSWORD: ${{ secrets.PGRAZOR_STORE_PASSWORD }}
+      PGRAZOR_KEY_PASSWORD: ${{ secrets.PGRAZOR_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" "sources;android-36" "ndk;27.3.13750724" "ndk;29.0.14206865"
+      - name: Install native build tools
+        run: python -m pip install "cmake==4.4.4" "ninja==1.13.2"
+      - name: Configure pinned native prerequisites
+        run: |
+          $sdkRoot = $env:ANDROID_SDK_ROOT
+          if (!$sdkRoot) { $sdkRoot = $env:ANDROID_HOME }
+          if (!$sdkRoot) { throw 'Android SDK root was not configured' }
+          $gameplayNdk = Join-Path $sdkRoot 'ndk/27.3.13750724'
+          $artNdk = Join-Path $sdkRoot 'ndk/29.0.14206865'
+          foreach ($ndkPath in @($gameplayNdk, $artNdk)) {
+            if (!(Test-Path -LiteralPath (Join-Path $ndkPath 'source.properties'))) { throw "Missing pinned NDK: $ndkPath" }
+          }
+          $nativeDeps = Join-Path $env:RUNNER_TEMP 'pgrazor-native-deps'
+          Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8 -Value @(
+            "ANDROID_SDK_ROOT=$sdkRoot",
+            "ANDROID_NDK_HOME=$gameplayNdk",
+            "PGRAZOR_ART_NDK=$artNdk",
+            "PGRAZOR_NATIVE_DEPS=$nativeDeps"
+          )
+      - name: Prepare and verify pinned native sources
+        run: |
+          python -B tools/prepare_native.py --download
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -B pgrazor/art_build.py --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate release tag
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if ($env:RELEASE_TAG -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:-[A-Za-z0-9.-]+)?$') { throw 'Use a version tag such as v0.1.0' }
+          if (!(Test-Path -LiteralPath "docs/releases/$env:RELEASE_TAG.md")) { throw "Add release notes in docs/releases/$env:RELEASE_TAG.md" }
+      - name: Prepare pinned DEX test dependencies
+        run: python -c "import sys; sys.path.insert(0, 'pgrazor'); import dex_bridges; dex_bridges.dependencies(download=True)"
+      - run: python -B tools/check.py
+      - name: Configure temporary signing path
+        shell: pwsh
+        run: Add-Content -LiteralPath $env:GITHUB_ENV -Value "PGRAZOR_KEYSTORE=$env:RUNNER_TEMP\pgrazor-signing.jks"
+      - name: Prepare pinned input and signing key
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PGRAZOR_INPUT_URL: ${{ secrets.PGRAZOR_INPUT_URL }}
+          PGRAZOR_KEYSTORE_BASE64: ${{ secrets.PGRAZOR_KEYSTORE_BASE64 }}
+        run: python -B tools/private_input.py
+      - name: Build playable package
+        env:
+          PGRAZOR_VERSION: ${{ inputs.tag }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -B pgrazor/nonroot.py --apk pgrazor/input/game.apkm --google-browser-login
+      - name: Produce single installable APK
+        shell: pwsh
+        env:
+          PGRAZOR_VERSION: ${{ inputs.tag }}
+        run: |
+          $candidate = Get-ChildItem -LiteralPath pgrazor/build/nonroot -Directory | Sort-Object Name -Descending | Select-Object -First 1
+          if (!$candidate) { throw 'Non-root package run is missing' }
+          python -B pgrazor/release_apk.py --run $candidate.FullName --output dist/release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build rooted installer and manual module
+        # Keep this after release_apk.py: rooted.py appends both Root checksums.
+        env:
+          PGRAZOR_VERSION: ${{ inputs.tag }}
+        run: python -B pgrazor/rooted.py pgrazor/input/game.apkm --skip-build --download --output dist/release
+      - name: Verify all three release downloads
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: python -B tools/verify_release.py dist/release --tag $env:RELEASE_TAG
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: PGRazor-android
+          path: |
+            dist/release/PGRazor.apk
+            dist/release/PGRazor-Root.apk
+            dist/release/PGRazor-Root-module.zip
+            dist/release/root-build-info.json
+            dist/release/SHA256SUMS.txt
+            dist/release/build-info.json
+          if-no-files-found: error
+          retention-days: 3
+      - name: Remove signing key
+        if: always()
+        shell: pwsh
+        run: |
+          if (!$env:PGRAZOR_KEYSTORE) { exit 0 }
+          $keyPath = [IO.Path]::GetFullPath($env:PGRAZOR_KEYSTORE)
+          $tempRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\') + '\'
+          if (!$keyPath.StartsWith($tempRoot, [StringComparison]::OrdinalIgnoreCase)) { throw 'Key is outside runner temp' }
+          if (Test-Path -LiteralPath $keyPath) { Remove-Item -LiteralPath $keyPath }
+  release:
+    needs: build
+    if: inputs.publish == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: PGRazor-android
+          path: release
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify downloaded release assets
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: python -B tools/verify_release.py release --tag "$RELEASE_TAG"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          cat "docs/releases/$RELEASE_TAG.md" docs/releases/footer.md > "$RUNNER_TEMP/release-notes.md"
+          assets=(release/PGRazor.apk release/PGRazor-Root.apk release/PGRazor-Root-module.zip release/SHA256SUMS.txt release/build-info.json release/root-build-info.json)
+          highlight="docs/releases/$RELEASE_TAG-quick-menu.png"
+          if [ -f "$highlight" ]; then
+            cp "$highlight" release/release-highlight.png
+            assets+=(release/release-highlight.png)
+          fi
+          gh release create "$RELEASE_TAG" "${assets[@]}" --target "$RELEASE_COMMIT" --title "PGRazor $RELEASE_TAG" --latest --notes-file "$RUNNER_TEMP/release-notes.md"
+  discord:
+    needs: release
+    uses: ./.github/workflows/discord-release.yml
+    with:
+      tag: ${{ inputs.tag }}
+    secrets:
+      DISCORD_RELEASE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}

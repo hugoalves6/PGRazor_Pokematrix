@@ -1,0 +1,67 @@
+package dev.pgrazor;
+
+/** Two separate JVM processes verify saved choices survive a cold start. */
+public final class ControlSettingsTest {
+    public static void main(String[] args) throws Exception {
+        android.app.Application app=new android.app.Application() {
+            public java.io.File getFilesDir(){return new java.io.File(args[1]);}
+        };
+        java.lang.reflect.Method load=Control.class.getDeclaredMethod("loadSettings",android.app.Application.class);
+        load.setAccessible(true); load.invoke(null,app);
+        Control.configureQuickBall(true); Control.configureQuickSummary(true); Control.configureCameraSteering(true);
+        if(args[0].equals("save")) {
+            Control.setGiftOptions(7);
+            Control.setSpawnBooster(true);Control.setIdleWalking(true);
+            Control.setAutoBerry(705); Control.setEncounterBerryEnabled(true); Control.setBuddyBerry(703);
+            Control.setBattleOptions(111); Control.setBattleOptions(981); // Rapid change: the newest value must win after coalescing.
+            Control.setGymRepeatEnabled(true);
+            Control.setLocalTimeOverlay(true);
+            Control.setRocketOptions(5);
+            Control.setItemCatalog("1|Poke Ball|150\n101|Potion|4");
+            Control.saveItemRules(true,"1:100;101:0;","1:100;101:0;2:250;");
+            try{Control.saveItemRules(true,"1:-1;","");throw new AssertionError("Negative cap accepted");}catch(IllegalArgumentException expected){}
+            Control.setQuickSpinEnabled(true); Control.setAutoTransferEnabled(true); Control.setTransferProtect(13);
+            Control.setEvolveTransferEnabled(true); Control.setEvolveTransferMode(1); Control.setEvolveTransferStages(2); Control.setEvolveTransferSpecies("4,25,1"); // canonicalizes to 1,4,25
+            Control.setEvolveTransferMode(5); Control.setEvolveTransferStages(9); Control.setEvolveTransferSpecies("1,abc"); // invalid: all ignored, prior choices kept
+            if(Control.evolveTransferMode()!=1||Control.evolveTransferStages()!=2||!Control.evolveTransferSpecies().equals("1,4,25"))throw new AssertionError("Invalid evolve-transfer setter input was not ignored");
+            Control.setQuickBallEnabled(true); Control.setQuickSummaryEnabled(true);
+            Control.setIvCatchEnabled(false); Control.setIvOwnedEnabled(true); Control.setStorageIvMode(3); Control.setStorageIvFormat(2); Control.setStorageIvEnabled(false); Control.setIvOwnedMode(3); Control.setIvCatchMode(1); Control.setIvCatchMode(0); Control.setCatchChanceShown(false); if(!Control.catchPreview())throw new AssertionError("Catch preview must default on"); Control.setCatchPreview(false); if(Control.autoLuckyEgg()||Control.autoStarPiece()||!Control.autoBoostConfig().equals("B1|0|0"))throw new AssertionError("Auto boosts must default off"); Control.setAutoLuckyEgg(true); Control.setAutoBall(true); Control.setAutoThrow(true); Control.setAutoThrowOnMap(true); Control.setAutoBallTarget(85); Control.setPvpKeep(0,false); Control.setPvpKeep(2,true); Control.setPvpRank(1,25);
+            Control.setThrowGrade(3); Control.setThrowCurve(true); Control.setMapTapMode(2);
+            Control.setQuickBallReady(false,"Loading"); Control.setQuickSummaryReady(false,"Loading");
+        }
+        if(!Control.itemTransferEnabled()||!Control.itemRules().equals("1:100;101:0;")||!Control.itemLimits().equals("1:100;101:0;2:250;")||!Control.itemCatalog().contains("Poke Ball"))throw new AssertionError("Item limits not persisted");
+        if(!Control.idleWalking()||Control.engine.idleWalkingActive())throw new AssertionError("Idle preference persistence without active motion");
+        if(!Control.spawnBooster()||Control.spawnAllowed())throw new AssertionError("Spawn persistence/readiness");
+        if(Control.giftOptions()!=7||Control.giftsAllowed())throw new AssertionError("Gift persistence/readiness");
+        if(Control.buddyBerry()!=703||Control.buddyAllowed())throw new AssertionError("Buddy preference/readiness");
+        if(!Control.encounterBerryEnabled()||!Control.berryPriority().equals("705")||Control.autoBerry()!=705)
+            throw new AssertionError("Berry choice/overlay not persisted");
+        if(Control.battleOptions()!=981||Control.battlesAllowed())throw new AssertionError("Other battle persistence/readiness");
+        if(!Control.gymRepeatEnabled())throw new AssertionError("Gym repeat not persisted across process restart");
+        if(!Control.localTimeOverlay())throw new AssertionError("Local clock not persisted across process restart");
+        if(Control.rocketOptions()!=5||Control.rocketAllowed())throw new AssertionError("Rocket persistence/readiness");
+        if(Control.itemAccessAllowed())throw new AssertionError("Item settings bypassed readiness");
+        if(!Control.quickSpinEnabled()||!Control.autoTransferEnabled()||Control.transferProtect()!=13||!Control.quickBallEnabled()||!Control.quickSummaryEnabled()||Control.throwGrade()!=3||
+           !Control.throwCurve()||Control.mapTapMode()!=2||!Control.cameraRelative())
+            throw new AssertionError("Saved settings lost across readiness/configuration/process restart");
+        if(Control.quickSpinAllowed()||Control.autoTransferAllowed()||Control.quickBallAllowed()||Control.quickSummaryAllowed()||Control.mapTapAllowed()||Control.throwAllowed())
+            throw new AssertionError("Saved preferences bypassed runtime readiness");
+        if(!Control.evolveTransferEnabled()||Control.evolveTransferMode()!=1||Control.evolveTransferStages()!=2||!Control.evolveTransferSpecies().equals("1,4,25")||!Control.evolveTransferConfig().equals("1|1|1|2|1,4,25"))
+            throw new AssertionError("Evolve-before-transfer settings lost across process restart");
+        if(Control.ivCatchEnabled()||!Control.ivOwnedEnabled()||Control.ivCatchMode()!=0||Control.ivOwnedMode()!=3||Control.nextIvMode(0)!=4||Control.nextIvMode(4)!=3||Control.nextIvMode(1)!=0)throw new AssertionError("IV display preferences lost across process restart");
+        if(Control.storageIvEnabled()||Control.storageIvFormat()!=2||!Control.storageIvConfig().equals("S2|0|1|3"))throw new AssertionError("Storage IV setting lost across process restart");
+        if(!Control.autoLuckyEgg()||Control.autoStarPiece()||!Control.autoBoostConfig().equals("B1|1|0"))throw new AssertionError("Auto boost settings lost across process restart");
+        if(!Control.autoThrow()||!Control.autoThrowOnMap()||Control.catchChanceShown()||Control.catchPreview()||!Control.autoBall()||Control.autoBallTarget()!=85||!Control.catchChanceConfig().startsWith("C5|0|1|85|")&&!Control.catchChanceConfig().endsWith("|1"))throw new AssertionError("Catch chance settings lost across process restart");
+        if(Control.pvpKeep(0)||!Control.pvpKeep(1)||Control.pvpRank(0)!=50||Control.pvpRank(1)!=25||!Control.pvpKeepConfig().equals("P2|0|25|10|150"))throw new AssertionError("PvP keep settings lost across process restart");
+        // Pending off-thread writes must reach disk before this process exits, or the restart cannot see them.
+        Control.flushSettings(5000);
+        if(args[0].equals("save")) {
+            // Read the file directly: this proves the daemon writer drained the newest coalesced snapshot.
+            java.util.Properties saved=new java.util.Properties();
+            try(java.io.FileInputStream in=new java.io.FileInputStream(new java.io.File(args[1],"pgrazor-settings-v1.properties"))){saved.load(in);}
+            if(!"981".equals(saved.getProperty("battleOptions"))||!"705".equals(saved.getProperty("berryPriority"))||!"5".equals(saved.getProperty("rocketOptions"))||!"true".equals(saved.getProperty("gymRepeatEnabled")))
+                throw new AssertionError("Queued settings were not flushed to disk before exit");
+        }
+        System.out.println("PASS: settings "+args[0]);
+    }
+}

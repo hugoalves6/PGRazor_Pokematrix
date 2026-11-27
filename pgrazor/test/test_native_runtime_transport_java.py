@@ -1,0 +1,141 @@
+"""Exercise the actual NativeRuntimeTransport on a JVM with a narrow Control shell.
+
+The transport is a typed binary boundary with no JSON/JS and no Android dependency, so this harness needs
+only a JDK -- no Android SDK sources or device. The Control shell is generated from the legacy mailbox
+allowlist (the shared source of truth) and cross-checked against the real Control.java at generation time.
+"""
+from pathlib import Path
+import re
+import subprocess
+import tempfile
+import unittest
+from test_control_java import java_tools
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def control_shell():
+    """Build a Control shell whose signatures match production Control.java exactly."""
+    source = (ROOT / 'src/dev/pgrazor/Control.java').read_text(encoding='utf-8')
+    mailbox = (ROOT / 'src/dev/pgrazor/RuntimeMailbox.java').read_text(encoding='utf-8')
+    specs = re.findall(r'^\s*"(\w+):([^":]*):([^":]+)"', mailbox, re.M)
+    specs.append(('setShinyTarget', 'boolean,double,double', 'void'))  # native-only action 59
+    specs.append(('eventBoxesAllowed', '', 'boolean'))
+    specs.append(('gymRepeatEnabled', '', 'boolean'))
+    specs.append(('smartCatchConfig', '', 'String'))
+    specs.append(('gymAutomationConfig', '', 'String'))
+    specs.append(('buddyEmotionConfig', '', 'String'))
+    specs.append(('buddyEmotionHistory', '', 'String'))
+    specs.append(('batchEvolutionConfig', '', 'String'))
+    specs.append(('oneShotAutomationConfig', '', 'String'))
+    specs.append(('researchConfig', '', 'String'))
+    specs.append(('storageIvConfig', '', 'String'))
+    specs.append(('catchChanceConfig', '', 'String'))
+    specs.append(('pvpKeepConfig', '', 'String'))
+    specs.append(('cutsceneSkipConfig', '', 'String'))
+    specs.append(('healConfig', '', 'String'))
+    specs.append(('shundoConfig', '', 'String'))
+    specs.append(('batteryConfig', '', 'String'))
+    specs.append(('smartBattleConfig', '', 'String'))
+    specs.append(('evolveTransferConfig', '', 'String'))
+    specs.append(('shinyScanConfig', '', 'String'))
+    specs.append(('routeGiftConfig', '', 'String'))
+    specs.append(('transferKeepIvConfig', '', 'String'))
+    specs.append(('autoBoostConfig', '', 'String'))
+    methods = []
+    for name, params, expected_result in specs:
+        actual = re.search(r'public static\s+(?:synchronized\s+)?([\w\[\]]+)\s+' + name + r'\(([^)]*)\)', source)
+        assert actual, name
+        types = [p.strip().split()[0] for p in actual[2].split(',') if p.strip()]
+        assert ','.join(types) == params and actual[1] == expected_result, name
+        signature = ','.join(t + ' a' + str(i) for i, t in enumerate(types))
+        if name == 'accountCommandSnapshot':
+            body = 'reads++;return snapshot;'
+        elif name == 'gymRepeatEnabled':
+            body = 'reads++;return gymRepeat;'
+        elif name == 'gymAutomationConfig':
+            body = 'reads++;return "1;1;0;0;50;10";'
+        elif name == 'oneShotAutomationConfig':
+            body = 'reads++;return "1|123|0|0|0|0|0|0";'
+        elif name == 'catchChanceConfig':
+            body = 'reads++;return "C1|1|0|75";'
+        elif name == 'pvpKeepConfig':
+            body = 'reads++;return "P2|50|10|0|150";'
+        elif name == 'cutsceneSkipConfig':
+            body = 'reads++;return "K1|1";'
+        elif name == 'healConfig':
+            body = 'reads++;return "H2|1|2|75|1|0";'
+        elif name == 'shundoConfig':
+            body = 'reads++;return "S1|7|123456789|0|1";'
+        elif name == 'batteryConfig':
+            body = 'reads++;return "B2|1|0|1|0";'
+        elif name == 'shinyScanConfig':
+            body = 'reads++;return "N3|5|1|700|2|8000|1|1|0|25,129";'
+        elif name == 'transferKeepIvConfig':
+            body = 'reads++;return "K1|85";'
+        elif name == 'autoBoostConfig':
+            body = 'reads++;return "B1|1|0";'
+        elif name == 'routeGiftConfig':
+            body = 'reads++;return "M1|1";'
+        elif name == 'evolveTransferConfig':
+            body = 'reads++;return "1|1|1|2|10,13";'
+        elif name == 'smartBattleConfig':
+            body = 'reads++;return "F1|1";'
+        elif name == 'storageIvConfig':
+            body = 'reads++;return "S2|2|2|3";'
+        elif name == 'researchConfig':
+            body = 'reads++;return "R1|1|1|CHALLENGE_CATCH_EASY";'
+        elif name in ('accountIdentity', 'accountSessionSaved'):
+            body = 'mutations++;if(onMutation!=null)onMutation.run();if(throwMutation)throw new RuntimeException("id-secret");'
+        elif name == 'event':
+            body = 'lastDiagnostic=a0;lastDiagnosticDetail=a1;diagnostics++;'
+        elif name == 'effectiveBerryPriority':
+            body = 'reads++;return badBerry;'  # settable so the fixture can drive a malformed-UTF-16 string
+        elif name == 'updateCameraHeadingAt':
+            body = 'timestamp=a3;'
+        elif name.startswith('take'):
+            body = 'boolean result=pulse;pulse=false;return result;'
+        elif not types and expected_result != 'void':
+            default = {'boolean': 'false', 'String': '""', 'int': '0', 'double': 'Double.NaN'}[expected_result]
+            body = 'reads++;return ' + default + ';'
+        else:
+            body = 'return true;' if expected_result == 'boolean' else ''
+        methods.append('public static ' + expected_result + ' ' + name + '(' + signature + '){' + body + '}')
+    return '''package dev.pgrazor;
+public final class Control {
+ public static int connects, renewals, disconnects;
+ public static void connect(){connects++;}
+ public static void renewLease(){renewals++;}
+ public static void disconnect(){disconnects++;}
+ public static int reads,mutations,diagnostics; public static boolean pulse,throwMutation,gymRepeat;
+ public static long timestamp;
+ public static String[] snapshot={"command","18446744073709551615"};
+ public static Runnable onMutation; public static String lastDiagnostic="",lastDiagnosticDetail=""; public static String badBerry="";
+ public static void reset(){reads=mutations=diagnostics=0;pulse=throwMutation=gymRepeat=false;timestamp=0;onMutation=null;lastDiagnostic="";lastDiagnosticDetail="";badBerry="";snapshot=new String[]{"command","18446744073709551615"};}
+''' + '\n'.join(methods) + '\n}\n'
+
+
+class NativeRuntimeTransportJavaTests(unittest.TestCase):
+    def test_transport(self):
+        compiler, runtime = java_tools()
+        with tempfile.TemporaryDirectory(prefix='pgrazor-native-transport-') as directory:
+            work = Path(directory)
+            (work / 'Control.java').write_text(control_shell(), encoding='utf-8')
+            sources = [
+                work / 'Control.java',
+                ROOT / 'src/dev/pgrazor/NativeRuntimeTransport.java',
+                ROOT / 'src/dev/pgrazor/NativeCore.java',
+                ROOT / 'src/dev/pgrazor/RuntimeHealth.java',
+                ROOT / 'test/NativeRuntimeTransportTest.java',
+            ]
+            compiled = subprocess.run([str(compiler), '-encoding', 'UTF-8', '-d', str(work), *map(str, sources)],
+                                      capture_output=True, text=True, timeout=45)
+            self.assertEqual(compiled.returncode, 0, compiled.stdout + compiled.stderr)
+            tested = subprocess.run([str(runtime), '-ea', '-cp', str(work), 'dev.pgrazor.NativeRuntimeTransportTest'],
+                                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(tested.returncode, 0, tested.stdout + tested.stderr)
+            self.assertIn('PASS NativeRuntimeTransport:', tested.stdout)
+
+
+if __name__ == '__main__':
+    unittest.main()

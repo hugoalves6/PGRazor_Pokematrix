@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "types": {
+    "5916": "Niantic.Holoholo.Social.UI.FriendProfileGuiController",
+    "5936": "Niantic.Holoholo.Social.UI.FriendProfileInfoPanel",
+    "6240": "Niantic.Holoholo.Social.Gifting.UI.OpenGiftGuiController",
+    "6258": "Niantic.Holoholo.Social.Gifting.UI.SendGiftGuiController",
+    "6268": "Niantic.Holoholo.Social.Gifting.UI.ViewGiftsGuiController",
+    "6211": "Niantic.Holoholo.Social.Gifting.UI.GiftItemView2Widget",
+    "6176": "Niantic.Holoholo.Social.Gifting.UI.StickerSelectionItemWidget",
+    "6195": "Niantic.Holoholo.Social.Gifting.UI.StickerSheetGuiController",
+    "6164": "Niantic.Holoholo.Social.Gifting.StickerService",
+    "6149": "Niantic.Holoholo.Social.Gifting.GiftingRpcService",
+    "6154": "Niantic.Holoholo.Social.Gifting.GiftingService"
+  },
+  "codes": {
+    "5916.get_ActionButtonsDisabled": [
+      176308848,
+      "00c04639c0035fd601c00639c0035fd6fe57bea9f44f01a9"
+    ],
+    "5916.get_CurrentlyOpenFriendProfileInfoPanel": [
+      176308864,
+      "fe57bea9f44f01a954510290f30300aa88e2573908010037"
+    ],
+    "5916.HandleOpenComplete": [
+      176310288,
+      "fe5fbda9f65701a9f44f02a954510290f30300aa88f25739"
+    ],
+    "5916.HandleDismiss": [
+      176313440,
+      "fd7bbaa9fc6f01a9fa6702a9f85f03a9f65704a9f44f05a9"
+    ],
+    "5936.SetFriendInfo": [
+      176346048,
+      "fe0f1bf8fa6701a9f85f02a9f65703a9f44f04a9f55002f0"
+    ],
+    "5936.CheckOnGift": [
+      176329088,
+      "ff0302d1fe2300f9f85f05a9f65706a9f44f07a9145102f0"
+    ],
+    "5936.OnGiftClick": [
+      176393408,
+      "fe5fbda9f65701a9f44f02a9b4500290f30300aa88c65839"
+    ],
+    "6164.AnyStickers": [
+      176953156,
+      "fe57bea9f44f01a9544c02f0f30300aa887a6339e8020037"
+    ],
+    "6164.StickerCountExcludingReserved": [
+      176963520,
+      "fe0f1df8f65701a9f44f02a9554c02b0f40301aaf30300aa"
+    ],
+    "6240.HandleOpenComplete": [
+      177112592,
+      "c0035fd6fe57bea9f44f01a9344b0290f30300aa881a6739"
+    ],
+    "6240.HandleDismiss": [
+      177112596,
+      "fe57bea9f44f01a9344b0290f30300aa881a673908010037"
+    ],
+    "6240.OnOpenClick": [
+      177113260,
+      "08a44a394800003402000014cc000014ff4302d1fe6705a9"
+    ],
+    "6258.HandleOpenComplete": [
+      177169192,
+      "e80f1dfcfe0700f9f65701a9f44f02a9b44a02d0f30300aa"
+    ],
+    "6258.HandleDismiss": [
+      177169520,
+      "1fd40b39c0035fd6fe57bea9f44f01a9b44a02d0f30300aa"
+    ],
+    "6258.OnSendClick": [
+      177170292,
+      "fe0f1df8f65701a9f44f02a9b44a02d0f30300aa88d26739"
+    ],
+    "6258.OnStickersClick": [
+      177176012,
+      "fe0f1cf8f85f01a9f65702a9f44f03a9b44a02b0f30300aa"
+    ],
+    "6176.Click": [
+      176977616,
+      "fe57bea9f44f01a9334c02b0f40300aa681a643908010037"
+    ],
+    "6176.Reinitialize": [
+      176977844,
+      "e80f1cfcfe0700f9f85f01a9f65702a9f44f03a9344c02b0"
+    ],
+    "6195.HandleOpenComplete": [
+      176993708,
+      "fe0f1cf8f85f01a9f65702a9f44f03a9144c02b0f30300aa"
+    ],
+    "6195.HandleDismiss": [
+      176994396,
+      "fe0f1df8f65701a9f44f02a9144c02b0f30300aa885a6439"
+    ],
+    "6211.UpdateData": [
+      177069052,
+      "fe5fbda9f65701a9f44f02a9764b02f0f30302aaf503012a"
+    ],
+    "6211.GiftBox": [
+      177069780,
+      "3f04007128010054086840f9e80000b43f00007109038052"
+    ],
+    "6211.OnClick": [
+      177069992,
+      "097040f9090100b4e80300aa202140f9231540f9240d40f9"
+    ],
+    "6268.Initialize": [
+      177192264,
+      "fe6fbba9fa6701a9f85f02a9f65703a9f44f04a9954a02b0"
+    ],
+    "6268.HandleOpenComplete": [
+      177198044,
+      "c0035fd6fe57bea9f44f01a9744a02f0f30300aa88266839"
+    ],
+    "6268.HandleDismiss": [
+      177198048,
+      "fe57bea9f44f01a9744a02f0f30300aa8826683908010037"
+    ],
+    "6268.ExitGui": [
+      177198744,
+      "fe0f1df8f65701a9f44f02a9744a02f0f30300aa882e6839"
+    ],
+    "6258.bmxm": [
+      177180928,
+      "fe0f1bf8fa6701a9f85f02a9f65703a9f44f04a9954a02f0"
+    ],
+    "6164.GetStickerInventory": [
+      176956344,
+      "fe5fbda9f65701a9f44f02a9554c02d0f303012af40300aa"
+    ],
+    "6258.bmxc": [
+      177166968,
+      "fe0f1af8fc6f01a9fa6702a9f85f03a9f65704a9f44f05a9"
+    ],
+    "6149.SendGift": [
+      176907556,
+      "fe0f1af8fc6f01a9fa6702a9f85f03a9f65704a9f44f05a9"
+    ],
+    "6154.get_SendableGiftsInInventory": [
+      176915820,
+      "fe0f1df8f65701a9f44f02a9b44c0290f30300aa88226539"
+    ],
+    "6164.ReserveStickers": [
+      176960896,
+      "ff4302d1fe6705a9f85f06a9f65707a9f44f08a9554c02b0"
+    ],
+    "6164.ReturnReservedStickers": [
+      176962012,
+      "ff0302d1fe2300f9f85f05a9f65706a9f44f07a9564c02b0"
+    ],
+    "6147.bmld": [
+      176913904,
+      "fe0f1cf8f85f01a9f65702a9f44f03a9b44c02b0f60301aa"
+    ],
+    "6147.bmle": [
+      176915000,
+      "fe57bea9f44f01a9b44c0290f30300aa88e2623908010037"
+    ]
+  },
+  "open_sequence": [
+    177129340,
+    "ff0302d1e81300fdfe1700f9fc6f03a9fa6704a9f85f05a9"
+  ]
+}

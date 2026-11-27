@@ -1,0 +1,318 @@
+{
+  "repository": "https://github.com/PokeMiners/pogo_assets",
+  "commit": "c2a686eb08ace6e890d8fe3d2134c76988db87b5",
+  "license_note": "Pokemon GO artwork; not covered by PGRazor MIT license. See NOTICE.txt.",
+  "icons": [
+    {
+      "source": "Images/Pokestops and Gyms/pokestop_near.png",
+      "name": "stop.png",
+      "purpose": "Nearby Pokestop marker, transparent and aspect-fit.",
+      "sha256": "3387fda94d98754ba677f87ea536900ddce389efd88b56b1365e174aba5f3804",
+      "upstream_blob_sha": "add14afaf9b26ee2a4c35b4718eb0208d0f7370b",
+      "bytes": 10336
+    },
+    {
+      "source": "Images/Pokestops and Gyms/TeamLess.png",
+      "name": "gym.png",
+      "purpose": "Gym map marker base disc (clean pokeball circle). Rendered over a resolved team-colour ring so one asset covers every team.",
+      "sha256": "3d3f346268d813e7f1bf6d9842af6e3c7df6ecaa2bfad4ae77db59438b7c50d2",
+      "upstream_blob_sha": "518c2a38252406c44952d3e9d5d24f00e01abb27",
+      "bytes": 17156
+    },
+    {
+      "source": "Images/Raids/ic_raid_egg_normal.png",
+      "name": "raid-normal.png",
+      "purpose": "Raid category cue for low-tier raids (pink egg). Chosen when the game-resolved RaidLevel name has no special keyword and its tier digit is 1-2.",
+      "sha256": "d7b4e114639fabccf2f5f2d5498d768aba15024ed22beacbc530f81d52b5ada7",
+      "upstream_blob_sha": "6a5db10e6c796531b4c51abd337ffc4a4ca687e1",
+      "bytes": 22668
+    },
+    {
+      "source": "Images/Raids/ic_raid_egg_rare.png",
+      "name": "raid-rare.png",
+      "purpose": "Raid category cue for mid-tier raids (gold egg). Chosen for RaidLevel tier digit 3-4.",
+      "sha256": "5e5800410c0c3a8597e2da5ad6899841e432ab8c2d443e043892abf150fb3fb4",
+      "upstream_blob_sha": "0444f90f3b31e1e87b0093d0b002dea0e2c60866",
+      "bytes": 21843
+    },
+    {
+      "source": "Images/Raids/ic_raid_egg_legendary.png",
+      "name": "raid-legendary.png",
+      "purpose": "Unhatched tier-5 raid egg only; not a guessed Mega category.",
+      "sha256": "6cabbdb662e5d8b181bd98fde889fd0f9e5dcb45fa82decc92be6b6bbd857a82",
+      "upstream_blob_sha": "3d03a32eb86a274f7805f39fbd3184bd28a26a26",
+      "bytes": 21213
+    },
+    {
+      "source": "Images/Raids/raid_egg_primal_icon.png",
+      "name": "raid-primal.png",
+      "purpose": "Raid category cue for Primal raids (red/orange glowing egg). Chosen when the resolved RaidLevel name contains 'Primal'.",
+      "sha256": "c21bb2c46e027c1e88d13ece6dd44b4c28c206fa424af309e3d07363e56b008f",
+      "upstream_blob_sha": "db4530675bbb76692100f9e207b8dded5c3f99f9",
+      "bytes": 23130
+    },
+    {
+      "source": "Images/Raids/raid_ultra_icon.png",
+      "name": "raid-ultra.png",
+      "purpose": "Raid category cue for Ultra Beast / Ultra Burst raids (blue-violet wormhole). Chosen when the resolved RaidLevel name contains 'Ultra'.",
+      "sha256": "e6329ebb8db369327bc79d378309e9e0d314ff6307cbad4421bc74b938ac566a",
+      "upstream_blob_sha": "8df11e880dfe8af66fe94bcc20b985c662267100",
+      "bytes": 24848
+    },
+    {
+      "source": "Images/Raids/shadow_icon.png",
+      "name": "raid-shadow.png",
+      "purpose": "Raid category cue for Shadow raids (purple smoke). Chosen when the resolved RaidLevel name contains 'Shadow'.",
+      "sha256": "eee9cdcf83b85d94983369d463c3c0029b8bcaade51917c6f0b9626a59576f70",
+      "upstream_blob_sha": "5b023806d860421a05cf2230c619483014ad5301",
+      "bytes": 8886
+    },
+    {
+      "source": "Images/Raids/ActivityLogRaidLogo.png",
+      "name": "raid-active.png",
+      "purpose": "Active ordinary raid; generic unknown raid category",
+      "sha256": "e8a5f333d88e490563edde7343f97eb920bea1990c4c3a767ba75b4e969b0db6",
+      "upstream_blob_sha": "524c932f7ba9b42d8dd5be2a34f766bb96a191a6",
+      "bytes": 4926
+    },
+    {
+      "source": "Images/Raids/ActivityLogMegaRaidLogo.png",
+      "name": "raid-mega-active.png",
+      "purpose": "Mega raid category emblem",
+      "sha256": "9f780874e6c517eac62710778d2361c96a7e5eb78218832f8ca25889f4bb75e4",
+      "upstream_blob_sha": "af9bb0a7f1d1a7f1a7ad0d5212458c0f99819ee5",
+      "bytes": 5226
+    },
+    {
+      "source": "Images/Raids/ActivityLogPrimalRaidLogo.png",
+      "name": "raid-primal-active.png",
+      "purpose": "Active Primal raid category emblem",
+      "sha256": "1c76b1794cb11cfa2dcb2b9ebd76bb3200efe4e65cdbc571193ad1f8606d6397",
+      "upstream_blob_sha": "f53c2e44683afd252689fae3abb6a81682f53f02",
+      "bytes": 5083
+    },
+    {
+      "source": "Images/Raids/ActivityLogShadowRaidLogo.png",
+      "name": "raid-shadow-active.png",
+      "purpose": "Active Shadow raid category emblem",
+      "sha256": "94655c96aec8696c6b0ae7ad43d14063cf9ac74abca8f31f9f211e5741e458e2",
+      "upstream_blob_sha": "a90537692fc26b68621366748810c9005ca1262d",
+      "bytes": 4150
+    },
+    {
+      "source": "Images/Plus/device_pbp_connected.png",
+      "name": "vgp-connected.png",
+      "purpose": "VGP connected overlay state",
+      "sha256": "fca6e9618e27e36fd33b7a5a960b7ad0ae59822c5db08949ef41ee63afc86737",
+      "upstream_blob_sha": "7a46d82a8a6bff0af854088f3063181434be70ed",
+      "bytes": 10965
+    },
+    {
+      "source": "Images/Plus/device_pbp_disconnected.png",
+      "name": "vgp-disconnected.png",
+      "purpose": "VGP disconnected overlay state",
+      "sha256": "bb48b6996ddb63f60bcb40984621ab8690d99ef16c0410bd81c1e382a16ab4db",
+      "upstream_blob_sha": "3f614667a4067ebc15ea09ab9e7fa7615746446b",
+      "bytes": 6207
+    },
+    {
+      "source": "Images/Pokestops and Gyms/team_blue.png",
+      "name": "team-blue.png",
+      "purpose": "Live feed gym team emblem",
+      "sha256": "dd23a8c11069f2b2f908e0d02cac448f4540caa8eabc2914b89b4107576315c1",
+      "bytes": 31423
+    },
+    {
+      "source": "Images/Pokestops and Gyms/team_red.png",
+      "name": "team-red.png",
+      "purpose": "Live feed gym team emblem",
+      "sha256": "06b784be5255fc684ddc35601625adf2047e07cde43ffbf293238d0090214ea0",
+      "bytes": 30538
+    },
+    {
+      "source": "Images/Pokestops and Gyms/team_yellow.png",
+      "name": "team-yellow.png",
+      "purpose": "Live feed gym team emblem",
+      "sha256": "8e0738ce9be08efe2393e4b2a7ddf919454cbefc97eb494effafe632a36705cf",
+      "bytes": 45119
+    },
+    {
+      "source": "Images/Items/Item_0701.png",
+      "name": "berry-701.png",
+      "purpose": "Catch berry priority selector and overlay. Original transparent artwork, aspect-fit at runtime.",
+      "sha256": "3a62b348564b45772c58d01d51368a0cb75e4ae63f5c9d1799a2b635eee7e813",
+      "upstream_blob_sha": "c95f55df85294d7e40d00535a820c90e8346347f",
+      "bytes": 54614
+    },
+    {
+      "source": "Images/Items/Item_0703.png",
+      "name": "berry-703.png",
+      "purpose": "Catch berry priority selector and overlay. Original transparent artwork, aspect-fit at runtime.",
+      "sha256": "4123c2456b00bd0ddcc54b64d1a1c804e90082f74ca3389e0504dd4242a06dd1",
+      "upstream_blob_sha": "e072f425fd7a80e7d3a6cbe99083df62f073bf6c",
+      "bytes": 42308
+    },
+    {
+      "source": "Images/Items/Item_0705.png",
+      "name": "berry-705.png",
+      "purpose": "Catch berry priority selector and overlay. Original transparent artwork, aspect-fit at runtime.",
+      "sha256": "f4389b97a7c8382f5ceb07226b4d1b53f12d914eaf40b745863234681ce87c1b",
+      "upstream_blob_sha": "951bc5a23cce36ab85491d26fb3b546a86ef4bdd",
+      "bytes": 49222
+    },
+    {
+      "source": "Images/Items/Item_0706.png",
+      "name": "berry-706.png",
+      "purpose": "Catch berry priority selector and overlay. Original transparent artwork, aspect-fit at runtime.",
+      "sha256": "42a2126078f1e7f1c586d0c62cfaf20bdf26e941840deaae815ef22f906eddf9",
+      "upstream_blob_sha": "66a562714413c31654d5b376007e50b1c3372ddb",
+      "bytes": 43710
+    },
+    {
+      "source": "Images/Items/Item_0707.png",
+      "name": "berry-707.png",
+      "purpose": "Catch berry priority selector and overlay. Original transparent artwork, aspect-fit at runtime.",
+      "sha256": "61d2aa71303427470b3da83cec836e2d805c9d7dc9adb78a313b44be7b301ae5",
+      "upstream_blob_sha": "70ad98e60cbb284b1c41d6b7af7020b204661551",
+      "bytes": 51721
+    },
+    {
+      "source": "Images/Route Maker/route_icon_gradient.png",
+      "name": "routes.png",
+      "purpose": "Active in-game Route overlay; transparent, aspect-fit, unchanged artwork.",
+      "sha256": "b2da600df5a2a8ddb3a0b235cfc7bd56da739f07ae30282cc558a1bf16836d52",
+      "upstream_blob_sha": "4e25715524b170d5d02f7c9d9b93cd3ff2ca4ab6",
+      "bytes": 3442
+    },
+    {
+      "source": "Images/Items/Item_1201.png",
+      "name": "item-1201.png",
+      "purpose": "Fast TM item icon for the Pokemon screen TM shortcut.",
+      "sha256": "e9862871a2714f52d4eb9a03c54728c8cf4cc4931540080fdb6eb6d7b07e33a0",
+      "upstream_blob_sha": "af03930b8b754121649f1b59004a562427571540",
+      "bytes": 24021
+    },
+    {
+      "source": "Images/Items/Item_1202.png",
+      "name": "item-1202.png",
+      "purpose": "Charged TM item icon for the Pokemon screen TM shortcut.",
+      "sha256": "21cb93c0adaf82a8d71c65b441332379a53372839e5ea6e2d882235ae092b312",
+      "upstream_blob_sha": "e8347bb1c63d8af3a62aad7f669a986a4bd796c8",
+      "bytes": 25882
+    }
+  ],
+  "species_names": {
+    "repository": "https://github.com/PokeMiners/pogo_assets",
+    "commit": "c2a686eb08ace6e890d8fe3d2134c76988db87b5",
+    "source": "Texts/Latest APK/English.txt",
+    "source_sha256": "1f9b1ff0b456498e542f1b222df94ae20ab76bc8ce53775c0ca64911b707e79b",
+    "output_sha256": "769d9d90207def665020023acaa134851228d057b31ceafc2ab9aad42f8d3d5c",
+    "entries": 1026,
+    "selection": "Exact pokemon_name_NNNN keys; base species only, no inferred forms; missing Dex 1009-1025 supplemented from the official English Pokedex, cross-checked against Game Master species symbols",
+    "base_output_sha256": "67c93dea3c31368c64cb2134e8bd421b8bd976311acfcff6f68d24b52224555f",
+    "supplemental_names": [
+      {
+        "dex": 1009,
+        "name": "Walking Wake",
+        "url": "https://sg.portal-pokemon.com/pokedex/1009/",
+        "source_sha256": "a0f15fc08c3009d222dd6e6c8c49c6a9deff4ebb3d874a0793e123d828c12b47"
+      },
+      {
+        "dex": 1010,
+        "name": "Iron Leaves",
+        "url": "https://sg.portal-pokemon.com/pokedex/1010/",
+        "source_sha256": "52be46509b446a2888087651b08abf3f38a9f63342bf3ab2389090912d577a27"
+      },
+      {
+        "dex": 1011,
+        "name": "Dipplin",
+        "url": "https://sg.portal-pokemon.com/pokedex/1011/",
+        "source_sha256": "0af7b3a8a4db216f12b1cb558e02660f1658781a88d3915b9e46954269fff78c"
+      },
+      {
+        "dex": 1012,
+        "name": "Poltchageist",
+        "url": "https://sg.portal-pokemon.com/pokedex/1012/",
+        "source_sha256": "79b5a48f47df69ccae57c5881b98f0744e2bd7954f9ae0d06bb5792da9861ad2"
+      },
+      {
+        "dex": 1013,
+        "name": "Sinistcha",
+        "url": "https://sg.portal-pokemon.com/pokedex/1013/",
+        "source_sha256": "9812e8cfee517545fa1f29beab0ffe3cba7e0306c9c2cdd944ceb897faeead3a"
+      },
+      {
+        "dex": 1014,
+        "name": "Okidogi",
+        "url": "https://sg.portal-pokemon.com/pokedex/1014/",
+        "source_sha256": "febc26e154bd09d7a4155b0afde216845103c669c5af52f6d61cab5357b548bd"
+      },
+      {
+        "dex": 1015,
+        "name": "Munkidori",
+        "url": "https://sg.portal-pokemon.com/pokedex/1015/",
+        "source_sha256": "bd1b025a3634251bc098bc543358952240b4c636a5a5391837cf2f23f19ddc3e"
+      },
+      {
+        "dex": 1016,
+        "name": "Fezandipiti",
+        "url": "https://sg.portal-pokemon.com/pokedex/1016/",
+        "source_sha256": "c48eef6d2bce9189567c13a3152a339e16c2d566db96ffd4c0ce46f69d115ecf"
+      },
+      {
+        "dex": 1017,
+        "name": "Ogerpon",
+        "url": "https://sg.portal-pokemon.com/pokedex/1017/",
+        "source_sha256": "7538e84f4984812a4f35d9d86466a4b68d927d37a6c4f9d9a1f0bcb8361145f7"
+      },
+      {
+        "dex": 1018,
+        "name": "Archaludon",
+        "url": "https://sg.portal-pokemon.com/pokedex/1018/",
+        "source_sha256": "785ee900e74ad397cc66d37ca16a38be8106237382bb8f09b196a9ff7a742936"
+      },
+      {
+        "dex": 1019,
+        "name": "Hydrapple",
+        "url": "https://sg.portal-pokemon.com/pokedex/1019/",
+        "source_sha256": "1140fbae9c41c1af5b155a2a55f191cda8d77b3607b802b2d617ce4897725202"
+      },
+      {
+        "dex": 1020,
+        "name": "Gouging Fire",
+        "url": "https://sg.portal-pokemon.com/pokedex/1020/",
+        "source_sha256": "baa79195d74aaab449af9f69a48b9457c13f2d3d77f7f6d3767c22282b19e152"
+      },
+      {
+        "dex": 1021,
+        "name": "Raging Bolt",
+        "url": "https://sg.portal-pokemon.com/pokedex/1021/",
+        "source_sha256": "1bbf0e06e0d3b9e3b3bdcc84d3d5a2200fdcc1b16feb39dd9c255389005fc5ef"
+      },
+      {
+        "dex": 1022,
+        "name": "Iron Boulder",
+        "url": "https://sg.portal-pokemon.com/pokedex/1022/",
+        "source_sha256": "1a6c07ec2f30ab849b7372fcef83bed7e78fb68fb55603b33aa4126d474e1d94"
+      },
+      {
+        "dex": 1023,
+        "name": "Iron Crown",
+        "url": "https://sg.portal-pokemon.com/pokedex/1023/",
+        "source_sha256": "04d742fac2214d9cf2b4610fdf2fa8ce889a8f6668c5e727d834a26c44a4ceb2"
+      },
+      {
+        "dex": 1024,
+        "name": "Terapagos",
+        "url": "https://sg.portal-pokemon.com/pokedex/1024/",
+        "source_sha256": "128a5025718f3c05927adc3877903ff47645aaebe0f581b1bc51cda5f4983efb"
+      },
+      {
+        "dex": 1025,
+        "name": "Pecharunt",
+        "url": "https://sg.portal-pokemon.com/pokedex/1025/",
+        "source_sha256": "0a7ad3db38daf7ed4d29d583c6604cbb3f82a0179ce672185f9bd9f5298b6d72"
+      }
+    ]
+  }
+}

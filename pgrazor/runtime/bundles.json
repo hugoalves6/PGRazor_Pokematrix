@@ -1,0 +1,17 @@
+{
+  "embedded-agent.js": [
+    "runtime/compiled-google-signin.js",
+    "runtime/compiled-location.js",
+    "runtime/location.js",
+    "runtime/translated.js",
+    "runtime/native-core.js",
+    "runtime/native-transport.js",
+    "embedded-agent.js"
+  ],
+  "camera-probe.js": [
+    "runtime/native-core.js",
+    "runtime/native-camera-metadata.js",
+    "runtime/native-camera-sampler.js",
+    "diagnostics/camera-probe.js"
+  ]
+}

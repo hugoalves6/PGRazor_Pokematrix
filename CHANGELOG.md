@@ -1,0 +1,603 @@
+# Changelog
+
+## v0.3.8.1
+
+[Full release notes](docs/releases/v0.3.8.1.md)
+
+Based on PGRazor v0.3.8 (Pokémon GO 0.439.0) with the fork's features carried over: TM shortcuts, VGP+ tag rules and fallback berries, manual-catch berry rules, and the compact overlay/settings layout changes.
+
+- Shared counter engine for gym, raid and Rocket counter picking; new raid settings (use counter party, team size 1–6, show counter list).
+- Settings backup: per-key validators and a shared preference schema so exported backups import correctly; full round-trip tests.
+- Storage-tag membership changes invalidate old VGP skips; tags still loading are deferred instead of rejected.
+- Full Pokémon storage JSON and CP-only copy (`CP1234, CP2345, CP5678`) for selecting duplicates in the game's search.
+- Device-verified on 0.439.0: raid and saved-party grunt battles pick counters through the fork's engine.
+
+## v0.3.8
+
+[Full release notes](docs/releases/v0.3.8.md)
+
+### Improvements & fixes
+
+- **Catch on map:** Tapping a Pokémon catches it on the map again instead of opening the encounter screen (broken by the 0.439.0 game update). The Incense bird guard had the same problem and is fixed too.
+- **Auto transfer:** Pokémon caught by Auto throw in the encounter screen now go through your transfer rules. An Auto Rocket session set to keep every catch still keeps them.
+- **Auto incubate:** Works again for players with more than 128 incubators. When incubation stops, the log now says which step failed.
+- **Auto Rocket:**
+  - VGP+ now catches and spins while walking between Rocket stops, and pauses for each battle. It stays off in teleport mode.
+  - Leader battles: Auto Rocket answers "Use" on the Rocket Radar prompt.
+  - At a stop that was already spun (for example by VGP+ on the way), Auto Rocket closes the PokéStop screen so the grunt can appear.
+  - A grunt that shows up late is battled instead of being left open on screen.
+  - Maximum battles can now be set up to 999 (was 100).
+
+## v0.3.7
+
+[Full release notes](docs/releases/v0.3.7.md)
+
+### New features
+
+- **Auto Rocket:** A new Automation task that walks to each Team GO Rocket stop nearby, battles the grunt (and leaders, if you choose), catches the shadow Pokémon and moves on to the next. Choose to keep every catch or run them through your transfer rules.
+- **Keep shadow, Dynamax and Gigantamax Pokémon:** New keep options in the transfer settings, each on by default.
+- **Global settings:** In Switch account, turn on Global settings and mark one account as Main; every account then uses the Main account's settings. Each account's own settings are kept and come back when Global settings is turned off. Location, favorites and routes stay per account. Deleting the main account makes the current account main with the settings in use.
+- **Auto Lucky Egg and Auto Star Piece:** Two switches under Go Plus, Stops & Items → Boosts.
+- **In-app updates:** When a newer release is out, an update row appears at the top of the settings menu. Tap it to download the right file for your build; the non-root app then installs it, and PGRazor Root saves its installer to Downloads for you to open. You won't need to goto a certain YouTube video and scroll down to the comments to download (lmao) 🤡.
+
+### Improvements & fixes
+
+- **Favorites:** Tap a favorite in the quick menu or on the World map to Teleport, Walk there, Rename or Delete it; the World map also offers Show on map. The World map's Saved places are now called Favorites too.
+- **Skip teleport confirmation:** Tick "Don't show this again" on the teleport cooldown dialog, or use the new switch in Location & Map (off by default). Skipped teleports show the cooldown in a short message.
+- Added more skip cutscenes, including the weather warning and the daily "Stay Aware of Your Surroundings" screen.
+- Updated to latest game version (0.439.0)
+- **Catch preview:** The Caught / broke free / fled message after a throw now has its own switch in Catching settings (on by default).
+- Fixed a Root startup crash when Vector replaces an ARM64 runtime hook during launch.
+- Hide the joystick on game menus, popups, and encounters, and restore it on the map without changing the saved toggle.
+- Max Battle catches now go through your transfer rules, whether thrown by hand or by Auto throw.
+## v0.3.6.2
+
+[Full release notes](docs/releases/v0.3.6.2.md)
+
+- Fixed settings backup import: tag-rule keys now have per-key validators and a default/custom export→import round-trip test.
+- Out-of-stock rule berries no longer hide the player's stocked fallback; the berry overlay and the native choice agree.
+- New "Fallback berries" setting: up to three berries in order, used only when the configured rare/candy berry is unavailable.
+- Silver Pinap now uses item 707, with migration of old 708 saves.
+- Storage-tag membership changes invalidate old VGP skips; tags still loading no longer cause a definitive rejection.
+- Added regression tests for berry fallback and tag-revision invalidation.
+
+## v0.3.6.1
+
+[Full release notes](docs/releases/v0.3.6.1.md)
+
+Based on PGRazor v0.3.6, with the fork's changes carried over:
+
+### New features
+
+- **TM shortcuts on the Pokémon screen:** a Fast TM / Charged TM icon before each move's power number starts the game's own TM flow. Settings › IV display.
+- **VGP+ tag rules:** "Catch only" and "Candy species" can use your Pokémon storage tags (whole candy family); candy berry (Pinap) for candy species; "Rare Pokémon: Ultra Ball + rare berry" with configurable rare criteria; "also catch rare Pokémon outside Catch only"; an overlay button to switch the tag rules on and off.
+- **Compact overlays:** smaller Buddy Emotion badge, smaller cooldown timer with the local time inside it, Gym feeder map icon switch, VGP status text switch.
+- **Double-tap on the map:** choose Walk or Teleport, with "Don't ask again".
+- **Manual catch berry follows the tag rules:** rare Pokémon get the rare berry (then Golden Razz, then the candy berry), candy families get the candy berry; the berry overlay shows the one in use.
+- **Settings layout:** separators and spacing between each option and its description across the menu; VGP+ Catch only / Candy species reordered with clearer descriptions.
+- Google sign-in works through the browser (Facebook sign-in is not possible on a re-signed APK).
+
+### Fixes
+
+- VGP+ reads a wild Pokémon's real IVs from the encounter response (the map's copy has none).
+- The IV line on the Pokémon screen is no longer hidden behind the model when opened from the Pokédex, and follows a power-up.
+- After changing VGP+ tag rules, Pokémon skipped under the old rules are considered again at once.
+
+## v0.3.6
+
+[Full release notes](docs/releases/v0.3.6.md)
+
+### New features
+
+- **Keep-IV cutoff:** Auto-transfer's keep-IV option is now a slider or typed value from 0 to 100%. Pokémon at or above it are kept.
+- **Candy quest filter:** PoGoCoordinates quest search can filter by Candy rewards and the Pokémon whose candy is given, such as Eternatus Candy ×25.
+- **Session stats:** Settings shows XP, stardust gained, catches, encounters, PokéStops, distance and hatches for the last hour and the last 24 hours.
+
+### Improvements & fixes
+
+- BSOA (Blue Screen of Annoyance) is fixed...hopefully.
+- Fixed VGP+ skipping lured, PokéStop, Route and daily-encounter Pokémon; caught Pokémon, incense ones included, now disappear from the map right away.
+- Hotspots show each spot's local date and time, with the correct UTC offset all year.
+- Fixed gym berry feeding and defender deployment.
+- Gym automation shows why a deploy or berry is declined (for example "Gym full") and stops re-reading gyms once berry reserves are reached.
+- The gym automation map button is off by default on new installs; existing settings are kept.
+- Research automation handles up to 80 claims, deletions and encounter catches every 10 minutes, and says when it pauses at that limit and when it resumes.
+
+## v0.3.5.2
+
+[Full release notes](docs/releases/v0.3.5.2.md)
+
+### New features
+
+- TM shortcuts on the Pokémon screen (Fast/Charged TM icon before each move; uses the game's own TM flow).
+- VGP+ tag rules: "Catch only" and "Candy species" accept Pokémon storage tags (whole candy families, kept up to date), a candy-species berry, configurable "rare" criteria with their own berry, "Also catch rare Pokémon outside Catch only", and an overlay button.
+- Settings › Tools › "Export Pokémon for CalcyIV" (experimental CSV for CalcyIV's history import).
+
+### Improvements & fixes
+
+- VGP+ now reads wild Pokémon IVs from the encounter (IV rules never matched before).
+- IV line on the Pokémon screen: no longer hidden behind the model when opened from the Pokédex; updates after a power-up.
+- VGP with location spoofing off no longer waits forever for the location (unverified on affected devices).
+- Changing VGP+ tag rules re-checks Pokémon skipped under the old rules.
+
+## v0.3.5.1
+
+[Full release notes](docs/releases/v0.3.5.1.md)
+
+### Improvements & fixes
+
+- Based on PGRazor v0.3.5; all v0.3.4.1 fork changes (compact Buddy badge, smaller cooldown timer with local time, Gym feeder icon switch, VGP status text switch, double-tap Walk/Teleport choice) carried over to the redesigned interface.
+## v0.3.5
+
+[Full release notes](docs/releases/v0.3.5.md)
+
+### New features
+
+- **Settings search:** a search field at the top of Settings finds any setting by name, description or common keyword (for example "fake gps" or "light mode"). Tapping a result opens its page and scrolls to it.
+- **Grouped settings home:** the category pages are grouped into Play, Automation and App.
+- **Exchange gifts with Mateo:** on a Route, PGRazor taps Mateo once you are in range and completes his gift exchange. Pokémon trades are left to you. Find it under Go Plus, Stops & Items → Routes.
+
+### Improvements & fixes
+
+- **Redesigned interface:** settings, the quick menu, overlays, dialogs and the map share one look, with calmer colours and a single accent.
+- Settings stay a comfortable width on tablets.
+- Status and navigation bar icons follow the light or dark theme.
+- Map catches now follow your auto-transfer rules.
+- Auto-Raid uses a newly awarded free raid pass instead of stopping when the previous one is spent.
+- Routes you walk yourself no longer pause with "your location could not be established".
+- The joystick no longer snaps back to the middle while you hold it.
+
+### Contributors
+
+- [@dhanush-c-c](https://github.com/dhanush-c-c): interface redesign and settings search ([#6](https://github.com/jpitty03/PGRazor/pull/6)), ART bridge build fix for Windows ([#5](https://github.com/jpitty03/PGRazor/pull/5)).
+
+## v0.3.4.1
+
+[Full release notes](docs/releases/v0.3.4.1.md)
+
+### Improvements & fixes
+
+- Buddy Emotion overlay is now a compact one-line badge (heart, EP, excited star, maintenance minutes); tap it for the full status.
+- The cooldown timer is smaller, and with "Show local time" on it shows the local time as a small second line instead of a separate overlay.
+- Gyms settings have a direct "Show Gym feeder map icon" switch.
+- Virtual Go Plus has a "Show VGP status text" switch, so the map can show only the VGP icon.
+- Double-tap on the game map asks Walk or Teleport, with "Don't ask again". Remembering Walk switches map tap to Walk; changing the Game map tap mode asks again.
+
+## v0.3.4
+
+[Full release notes](docs/releases/v0.3.4.md)
+
+### Improvements & fixes
+
+- Updated to latest game version (0.437.0)
+- Gift batch sending skips friends who still have an unopened gift from you, and the pause between gift sends and opens is shorter.
+- Auto-Raid closes the "You received a free raid pass" screen itself and keeps the pass.
+- When account switching cannot start in a session, the other features keep working on the profile the game started with.
+
+## v0.3.3
+
+[Full release notes](docs/releases/v0.3.3.md)
+
+### New features
+
+- **Shiny Scanner (Experimental):** Automation can check wild Pokémon within 80 m for shinies without catching them. A shiny gets a popup, a phone notification, a ✨ above it on the map and a badge; walking stops and the shiny is held so it can still be caught after it leaves the map. Catch it on the popup opens the encounter, or throws for you once it has left the map. Speed, species and a 24-hour encounter limit are adjustable.
+- **VGP+ Catch only shinies:** VGP+ still opens every Pokémon but throws only at shinies and leaves the rest on the map.
+- **Encounter counter:** Wild encounters per account over a rolling 24 hours, shown next to the PGRazor title with an optional map badge. It counts encounters made on this device while PGRazor is running.
+- **Auto-Raid Stay within:** Limits raids to 1, 2, 5 or 10 km from where the session started, and returns there once when nothing is left in range. No limit is the default.
+
+### Improvements & fixes
+
+- The world map search accepts coordinates and places the destination pin there, ready for Teleport or Walk here.
+- The quick menu's Teleport dialog is now "Go to coordinates" and can Walk as well as Teleport.
+- Coordinates can be entered with a space as well as a comma.
+
+## v0.3.2
+
+[Full release notes](docs/releases/v0.3.2.md)
+
+### New features
+
+- **UI Updates:** Settings opens on ten categories, each with an icon and a summary of its current values, and each opens its own page with a back button. Display gains a Dark theme switch.
+- **VGP+ Catch speed:** Normal, Fast or Fastest shortens the wait before each throw and before the next scan. Normal is the default and keeps the previous timing.
+- **Keep costume Pokemon:** Auto-transfer's "Keep event / costume Pokemon" is now two options, so costumes can be kept without keeping every Pokémon caught during an event. Existing settings and backups keep both ticked if the old option was on.
+
+### Improvements & fixes
+
+- The VGP+ status shows why a Pokémon was kept, such as "Kept: IV 90%+", "Kept: shiny" or "Kept: event", instead of "Kept: protected". With Evolve first on it shows "Queued to evolve, then transfer".
+- Pokémon lists have a Mighty (GO Wild Area) category covering the GO Wild Area 2026: Global Mighty Pokémon.
+- Research auto-catch uses your current VGP+ ball, throw rating and curve settings instead of the defaults.
+- Auto-Raid waits for the map to return after leaving a lobby before opening the next gym, taps a gym again if it did not open, and retries raids left for too few players after 3 minutes instead of 10.
+- The auto ball rows under Go Plus are renamed "VGP+ auto ball".
+- Shundo Sniper throws a Safari Ball at a Mighty shiny while you have any, and goes back to Ultra, Great or Poké Balls if you run out or the game does not accept it.
+
+## v0.3.0
+
+[Full release notes](docs/releases/v0.3.0.md)
+
+### New features
+
+- **Auto Throw:** Throws has a default-off toggle for automatic throws using your throw settings, selected ball and berry, with Always Hit, plus optional Catch on map for tapped wild, lure and incense Pokémon, with a pin above the one being caught. A tap made while VGP+ is busy waits for it, caught Pokémon are removed from the map, and reward Pokémon from Go Pass and research are left for manual throws. Auto-Raid shares the throwing logic and always uses it, even when the toggle is off, with built-in Excellent curveballs.
+- **Go Wild November 2026:** Events has separate, default-off Safari Ball preferences for Mighty Pokémon in VGP+ and Auto Ball. Normal ball settings apply when Safari Balls are unavailable or the encounter is ineligible.
+- **Auto-Raid:** Automation can find nearby matching raids, travel to them, wait for enough players, battle using your auto-attack settings, and attempt the bonus catch. Run it by going to Automation -> Auto-Raid
+- **PGRazor Root (experimental):** A separate installer loads PGRazor into the official game with logs, settings backups, account switching, an on/off switch that takes effect on the next game launch, and an always-available Reboot button. This update needs one reboot to install the new loader; switching afterward needs no reboot, and the choice survives updates.
+
+### Improvements & fixes
+
+- Berry priorities can also be selected in Settings under Catch & summary, using the same preferences as the encounter overlay.
+- Quick Catch adds experimental acceleration for Dynamax catch, breakout, and flee animations, with Max-specific speed and cleanup diagnostics.
+- Pokémon lists support relevant category filters, including Legendary, Mega-capable, and second- or third-stage evolutions, with selection by name.
+- Auto incubate or Skip cutscenes now skips the post-hatch Eggs page by completing the hatch directly. Manually opened Eggs pages remain accessible.
+- Hatch outcomes and page-dismissal failure reasons are retained when run logs rotate.
+- Rooted startup can resolve Android's loader through its loaded system libraries when the default symbol lookup is unavailable, with more specific failure diagnostics.
+- Account restoration waits briefly for the game activity to resume before requesting its restart, avoiding a blocked handoff during sign-in transitions.
+- Shundo Sniper waits for account and gameplay readiness before teleporting and shows the blocking reason instead of continuing to display “Checking”.
+- Brought the rooted build up to date with v0.2.5 features and Pokémon GO 0.435.2 support, including hook/readiness diagnostics and phone details. Rooted startup logs distinguish waiting for Unity rendering from native library loading.
+- Added more cutscene skips, including the "New level unlocks" and other feature-unlock cards. A hidden level-up screen no longer blocks taps for up to 30 seconds.
+- Added a startup fallback for phones where features sometimes did not load until the game was restarted. Exported logs now record the reason if it still happens, plus more account and settings details.
+- Shundo Sniper: stops and asks you to restart the game when the map stops loading Pokémon, instead of teleporting with no results. It also uses less data and searches the map less often while waiting.
+- Run logs keep more history, and PGRazor no longer leaves 5 MB of old files behind each time the game starts.
+
+## v0.2.5
+
+[Full release notes](docs/releases/v0.2.5.md)
+
+### Improvements & fixes
+
+- More useful diagnostics for failed hooks, account readiness waits and VGP+ readiness, with clearer startup failure reasons and background/resume tracking.
+- Logs include phone manufacturer/model, Android version
+- Reduced repetitive logging and retained key startup diagnostics when logs rotate.
+
+## v0.2.4
+
+[Full release notes](docs/releases/v0.2.4.md)
+
+### New features
+
+- **Local time:** optional draggable clock in General Settings showing the time at your spoofed location.
+- **Gym battles:** new "Battle until defeated" toggle to repeat full rounds from the same gym screen, with Smart healing between rounds when enabled for after battle. Uses your existing battle settings; off by default.
+- **Evolve before transferring:** evolve new catches once or through all available stages before transferring. Use your current transfer rules or a separate species list; keep protections still apply.
+- **Smart battling:** picks counters for the Pokémon you are fighting. It builds your team before gym, raid, and Rocket grunt battles, and swaps to your best counter during gym and Rocket battles. Off by default.
+
+### Improvements & fixes
+
+- Auto incubate dismisses the Eggs page opened after a hatch.
+- Adventure Sync prompts are dismissed...hopefully.
+- Skip cutscenes fixes
+- During Dyndmax battles, Max energy orbs are automatically grabbed.
+- Updated to latest game version (0.435.2)
+- UI and performance updates
+
+## v0.2.3
+
+[Full release notes](docs/releases/v0.2.3.md)
+
+### New features
+
+- **Battery usage:** lower resolution, 20 FPS cap, or fewer effects (General Settings).
+- **Throw variety:** random throw ratings from the ones you pick, under Throws and in VGP+. Off by default.
+- **VGP+ catch-only list:** VGP+ catches only the species you choose.
+- **Shundo Sniper black screen:** tap Dark on its card; tap the screen to return.
+
+### Improvements & fixes
+
+- Smart healing: new "Always heal fully" item choice.
+- Shundo Sniper: starts sooner, moves on faster when its target doesn't appear, and shows missed checks.
+- Transfer on catch: new "Keep 0% IV (0/0/0)" option.
+- Gym Slotter and Berry Feeder: placing a defender now comes before feeding.
+- World map tiles load faster.
+- More cutscene skips.
+
+## v0.2.2
+
+[Full release notes](docs/releases/v0.2.2.md)
+
+### New features
+
+- **Skip cutscenes:** Off by default; turn it on under Settings > General Settings.
+- **Smart healing:** Heals damaged Pokémon after battles, periodically, or both, choosing the mix of potions (and optionally revives) that wastes the least, so a Pokémon missing 5 HP gets a Potion, not a Max Potion. Choose the HP threshold (below 25%, 50% or 75%, or any HP missing) under Settings > Team Rocket, Gyms, Raids & Dynamax.
+- **Shundo Sniper (experimental):** Teleports to 100% IV Pokémon from the PGRazor 100% IV feed (no sign-in needed, you're welcome you greedy bastards), LivePokeMap and PoGoCoordinates, checks each one in the background for shiny and catches only shinies. A shiny found during a cooldown is held until the cooldown ends, then caught. Open it from Automation. Its constant teleporting raises the risk of an account warning or ban, so use an alt account.
+
+### Improvements & fixes
+
+- Team GO Rocket battles: while any Rocket automation option is on, the next Pokémon is picked automatically when one faints.
+- Location & overlays is renamed General Settings.
+- Team Rocket settings now sit with gyms, raids and Dynamax under Team Rocket, Gyms, Raids & Dynamax.
+- World map: PokéStops invaded by Team GO Rocket show darkened with a red R.
+- Skip cutscenes also closes the "You're going too fast" warning.
+- Teleports and walking could stop moving you on the map until the game was restarted, after the game switched between its location services; your position now keeps updating.
+- Research: a selected task whose deletion fails is tried again after 30 seconds and then after 2 minutes, instead of staying in your task list until the game restarts.
+
+## v0.2.1
+
+[Full release notes](docs/releases/v0.2.1.md)
+
+- **Catch chance:** Manual encounters show each ball's chance to catch, from the server's catch rate for that encounter with your berry, throw rating and curveball applied. The server's rate already includes your type medal bonus. Turn it off under Settings > Throws.
+- **Auto ball:** Optionally picks the cheapest Poké, Great or Ultra Ball that reaches your target chance when a manual encounter opens and after each escape. A ball you pick by hand is kept until the next escape, and it never uses a Master Ball. Turn it on under Settings > Throws.
+- **VGP+ auto ball:** VGP+ can also pick the cheapest Poké, Great or Ultra Ball that reaches your target chance for each throw, using the server's catch rate with your VGP+ berry, throw rating and curveball. It replaces the standard ball; the shiny, IV and CP/level Ultra Ball rules still apply, and it never uses a Master Ball. Turn it on under Virtual Go Plus > VGP+.
+- **IV display:** Encounter and Pokémon stats screen IVs show on a light panel like the storage list. On the Pokémon stats screen the panel sits just above the name, in front of the Pokémon. Under Settings > Location & overlays > IV Display, each screen (Encounter, Pokémon stats screen, Pokémon storage list) has one button that cycles Off, Lv · IV · 15/14/12, Lv · IV and Lv · 15/14/12, and the storage list can now show the level too.
+- **PvP keep:** Auto-transfer can keep catches with good PvP IVs, with a separate rank for Great League (default top 50), Ultra League (default top 10) and Master League (off by default), counting the Pokémon and anything it evolves into when that species is in PvPoke's top 150 for the league. Set it under Transfer on catch.
+- **PvP IV display:** A new PvP format for the encounter, Pokémon stats screen and storage list IVs adds a second row with each league's crest and rank: the IV rank in Great and Ultra League, and the species' PvPoke rank in Master League.
+- **PoGoCoordinates feed:** Feeds now asks which service to open: LivePokeMap or PoGoCoordinates. PoGoCoordinates searches Pokémon, raids, quests, weather, Rocket and power spots by IV, level, PvP rank and more, with Discord sign-in for higher result limits or guest use. Each service keeps its own sign-in.
+- **VGP incense catches:** Virtual GO Plus and VGP+ now catch Pokémon attracted by your incense, not only wild spawns, with the same VGP+ rules, auto ball and transfer settings.
+- **LivePokeMap PvP search:** A new PvP only filter lists just Pokémon ranked within your max rank in the leagues you tick, for example Great League top 50, ignoring the IV, level and size filters. Feed rows show any top-100 Great, Ultra or Little Cup rank.
+- LivePokeMap's My Shinies tab and its filter are removed, since LivePokeMap no longer offers My Shinies.
+- The quick menu and draggable overlays stay inside the screen, clear of the notch and navigation bar.
+
+## v0.2.0
+
+[Full release notes](docs/releases/v0.2.0.md)
+
+- **Research:** Auto-claims completed field research, auto-deletes the field research tasks you select from a list grouped into Item, Encounter and Event, and can catch waiting field research encounters without the encounter screen, applying your transfer rules. Open it from the quick menu.
+- **Hide overlay:** A new quick menu entry makes the game look stock after a confirmation: it hides every PGRazor button, status bar and message, plus the in-game IV text. Tap the screen with three fingers at once to show them again.
+- **Storage list IVs:** Shows each Pokémon's IVs under its CP in the Pokémon storage list, as attack/defense/HP, a percentage, or both, colored like the encounter IV overlay. All IV display settings (inventory, encounter and storage list) are now together under Settings > Location & overlays > IV Display.
+- **Encounter IVs:** The encounter IV overlay now also shows on field research reward encounters, not only wild spawns.
+- **Always Hit:** Now also works when catching after a Max Battle.
+- **AR+ throw bonus:** Wild catches now get the AR+ catch bonus.
+- **GPX routes:** Starting a GPX route in Autowalk now asks where to begin: from the closest point on the route, from the beginning, or by teleporting to the beginning.
+- **Copy coordinates:** The World map has Copy my location and Copy pin location buttons, which center the map on that spot and copy its coordinates. The quick menu Teleport dialog shows your current coordinates with Copy and Favorite buttons; Favorite saves the spot to Favorites under a name you choose.
+- Menu options and buttons now look like buttons, with an outline and space between neighbouring buttons.
+
+## v0.1.10
+
+[Full release notes](docs/releases/v0.1.10.md)
+
+- Quick Catch returns to the map faster after a successful catch.
+- Added backwards compatibility for older Android versions.
+
+## v0.1.9
+
+[Full release notes](docs/releases/v0.1.9.md)
+
+- Updated compatibility for Pokémon GO 0.435.1.
+- Reduced reward-summary flashing during Quick Catch.
+
+## v0.1.8
+
+[Full release notes](docs/releases/v0.1.8.md)
+
+- Group battle checkboxes under Gyms, Raids, and Dynamax, with Gym Slotter & Berry Feeder first inside Gyms. Existing choices are preserved.
+
+- Add Location & overlays > Customize Quick Menu: hide individual menu entries without changing feature settings. Choices are saved per account and included in settings backups; Settings remains accessible.
+
+- Add Automation > Send & Open Gifts: one manually started batch, confirmed progress, Stop, and an option to attempt opening with a full item bag using the game's reward setting. Game eligibility and daily limits still apply.
+
+
+- Restore automatic gift opening and sending when friend-screen callbacks arrive between native scheduler ticks.
+
+- Reduce VGP+ idle scene scans from up to 10 per second to 1 per second, retaining responsive pending catches and cancellation.
+
+- Preserve the trainer profile's scroll position during background player-stat updates, including VGP+ catches and transfers.
+
+- Make buddy care lighter and usable behind menus: idle checks run once per second, with one scene lookup per evaluation and berry-selection service lookups reduced from up to 5 to 1. Cancellation stays responsive.
+
+- Recover map readiness after a temporary straight-down camera angle instead of permanently stopping camera sampling and leaving VGP or buddy care waiting for the map.
+
+## v0.1.7
+
+[Full release notes](docs/releases/v0.1.7.md)
+
+- Start buddy snapshot sessions with the game's buddy photo context and server-adjusted start time before completing the snapshot. A successful request is reported separately from unverified heart credit.
+
+- Fix map-dependent automation stopping after long sessions; continuous camera updates no longer hit the diagnostic observation limit. Gym overlay now distinguishes map and inventory waits. Session logs rotate at 1 MiB with six recent segments and six diagnostic tails retained.
+- Fix gym berry inventory waits: use the game's item-bag feeding operation, remember its cache update across later berry gains, and recover from delayed inventory acknowledgement instead of permanently pausing after five seconds.
+- Add an expandable Automation section in Settings and an Automation entry in Quick Menu. Move Mass Evolve there alongside two experimental, manually started tasks.
+- Add a Daily Incense session: activate incense in the game, choose a heading from 0 to 359 degrees, then start a straight walk at 10.5 km/h for up to 15 minutes. Stop, manual movement takeover, backgrounding, or lost account/game/location readiness ends the session. Loaded Galarian bird detection blocks VGP and stops the owned walk, attempts the normal encounter tap once, and requests sound/vibration notification. Catch manually; no automatic throw or Master Ball use. No spawn count or timing is guaranteed. Joystick movement releases the idle-walking hold after completion or a bird alert. The live Galarian-bird encounter handoff remains unverified.
+- Add a single bounded Remote Gym Feeding batch for gyms with your own deployed defenders. Feed surplus Nanab, then Razz, with optional Pinap and separate reserves; premium berries are excluded. Stop cancels unsent work, server limits still apply, and counters reflect confirmed responses only. No recurring schedule or reward payout is promised. Confirmed accepted feeding and clean Stop behavior on MuMu.
+- Add optional Idle walking under Location & overlays. After 3 seconds idle, follow a 10 m-radius circle within 20 m of the starting point, using the selected speed up to 5 km/h. Joystick and routes take priority; speed 0, backgrounding and lost location readiness pause movement. The setting is saved per account and included in backups. Walking distance credit remains game-dependent.
+- Expand Gym Slotter, Berry Feeder and VGP+ gym-disc spinning to the 80 m base interaction range, retaining eligibility, cooldown and server-result checks.
+- Recover gym discovery after manually viewing a gym. Preserve inventory acknowledgement and timeout safeguards for outstanding actions, and show native pause reasons instead of getting stuck at Starting.
+- Show gym-disc activity on VGP+ instead of overwriting the Gym Slotter & Berry Feeder overlay. Gym spinning remains controlled by VGP+.
+- Limit the Keep All overlay to manual encounters. VGP and VGP+ continue using the main transfer switch, protection rules and keep list.
+- Resume unfinished buddy feeding cycles after selected berries are restocked above reserve. Preserve the remaining feed budget and confirmed cooldowns; existing saved retry timers are not cleared.
+- Update the feature guides for gym range and manual encounter transfer controls.
+- Note in Settings and the feature guides that Spawn booster can cause lag in busy areas with many nearby Pokémon.
+- Reduce overlay work on the game's UI thread: the hidden Settings panel is no longer refreshed every 100 ms, and overlay status text and backgrounds are updated only when they change. Session logs record VGP marker phase changes and periodic positions, spawn-range changes, and event-box results or availability changes plus periodic heartbeats. Idle event-box scan counters do not trigger extra reports.
+
+## v0.1.7-experimental.3
+
+[Full release notes](docs/releases/v0.1.7-experimental.3.md)
+
+- Fix gym deployment-to-feeding transitions latching Paused when a settings, readiness, or gym eligibility check changes before the next request is sent. Recheck unsent work; keep uncertain in-flight outcomes paused. User confirmed recovery across two successful gym deployments on Android.
+
+- Add Auto-spin Gym discs under VGP+, controlled by the VGP overlay, with bag-space checks and per-gym cooldown handling. Gym-disc spinning has been user-verified.
+
+- Gym auto quick/charged attacks now activate Battle on the next-opponent dialog without waiting for the countdown; manual exit and disabled automation cancel continuation.
+
+- Recheck nearby gyms promptly after temporary no-action results instead of excluding them for 60 seconds; keep reserve and retry status visible.
+
+- Add a draggable gym-and-berry overlay that starts/stops the entire Gym Slotter & Berry Feeder while preserving deployment and feeding choices. Active cooldown stops both actions; restart manually after it ends. The master starts off each session. A small status line follows the icon and shows deployment, feeding, and cooldown activity.
+
+- Add Batch evolution: preview a named tag, review candy/item costs and skipped entries, then evolve eligible Pokemon sequentially without opening the cutscene. Include Stop, inventory-confirmed progress, server-reported XP, and optional removal of the selected tag after successful evolution. Preserve other tags and skipped entries; special or ambiguous evolutions are skipped.
+- Validate tag-removal request construction during preview and handle replacement Pokemon IDs when confirming evolutions. Evolution and optional tag removal have been user-tested on MuMu.
+
+- Add Walk and Teleport actions to world-map Stop, Gym, and Raid details, including the destination cooldown confirmation.
+
+- Fix Quick Spin losing pending spins during short frame stalls or concurrent settings updates. Continue to revoke automation when settings are disabled or stale.
+
+- Fix buddy care pausing on gift results and carrying a paused state into a newly selected buddy. Wait until the buddy is on the map before opening gifts.
+- Add a separate EP overlay visibility setting and compact Clear/Reset controls in the buddy berry-priority picker.
+
+- Consolidate buddy care into the Buddy Emotion Engine dropdown, with ordered berry selection and reserve-aware fallback. Preserve existing berry choices and retire the separate Auto feed buddy control.
+- Rename Smart Background Catcher to VGP+ and group its controls under Virtual Go Plus. Gray out dependent settings when their parent is off, while preserving saved choices.
+
+- Keep Buddy Emotion automation independent of location/joystick activation, and show when feeding is blocked by berry reserves, fullness/cooldown, or unavailable game services.
+
+- Add a native Buddy Emotion Engine with automatic snapshots, petting, hunger-based normal-berry feeding, optional gift collection, berry reserves, and a draggable status display using game-reported EP. Preserve recent action history across restarts. Maintenance countdown is an estimate; walking and battles remain manual.
+
+- Fix gym deployment and feeding blocked by an unreliable local closed flag; honor server results and feeding cooldowns, keep placement lockouts separate, and report skipped-gym reasons.
+
+- Fix event collection skipping visible, manually collectable boxes because of an extra local expiry cutoff.
+
+- Add a Gym Slotter & Berry Feeder with separate deployment and feeding switches, Gym-tag priority, optional low-CP fallback, berry reserves, and native request pacing. Deployment and consecutive feeding with Stardust rewards verified on MuMu.
+
+- Add Smart Background Catcher with configurable balls, berries, throw quality, and species priorities. Continue catching while in-game menus are open and consider loaded spawns beyond the standard VGP distance limit, subject to server acceptance.
+- Fix Smart Catcher rejecting valid encounter responses with a native VGP error; preserve catch retries and automatic transfer behavior.
+
+- Restore wild-catch cooldown history by preserving native encounter types. Show zero cooldown when no actions are recorded.
+
+- Show the cooldown warning before every user teleport, including coordinates, Favorites, World Map destinations, feeds, hotspots, and in-game map-tap teleport controls.
+
+- Add 14 curated hotspots to the World Map and Quick Menu. Map choices select a waypoint; Quick Menu offers Walk or Teleport, and hotspot teleports show a destination cooldown estimate before confirmation.
+
+- Show a live blue current-location dot on the World Map independently of the red destination pin.
+
+- Add World Map place search for businesses, parks, landmarks, and addresses, biased toward the viewed map area. Selecting a result centers its destination pin; Walk and Teleport remain explicit actions. Search uses Photon/OpenStreetMap and results may be incomplete.
+
+### Using tags for gym defenders and evolution
+
+These controls are included in v0.1.7-experimental.3.
+
+**Gym defenders**
+
+1. In Pokémon GO's Pokémon storage, open **Tags**, create a tag named `Gym`, and apply it to Pokémon you want to deploy. `#Gym` is also recognized, but `Gym` is the simplest name to use.
+2. Open **PGRazor Settings → Raids, gyms & Dynamax → Gym Slotter & Berry Feeder**, then enable **Auto-deploy to open Gym slots**.
+3. Start the feature with its gym-and-berry overlay icon or **Run Gym Slotter & Berry Feeder**, then stay on the game map near a friendly gym within 40 m with an open slot. VGP does not need to be running. The slotter prefers eligible tagged defenders; favorites, your current buddy, injured or deployed Pokémon, and other ineligible defenders are skipped. It also avoids species already defending that gym.
+4. Leave **Allow lowest-CP fallback** off to restrict deployment to your tagged choices. Enable it only if you also want eligible untagged Pokémon considered when none of your tagged defenders can be used. Deployment does not remove the `Gym` tag.
+
+Deployment and berry feeding have separate selection switches; the overlay starts/stops the whole feature without clearing either choice. Feeding does not require tagging the defenders. Enable **Show gym automation overlay** for the draggable gym-and-berry icon. Active cooldown stops both actions; restart manually after it ends. It uses Nanab, then Razz, only above your configured reserves, and respects server refusals and feeding limits.
+
+**Batch evolution**
+
+1. Create a tag such as `Evolve` in Pokémon storage and apply it only to Pokémon you want evolved. You can use another tag name; enter that name in **PGRazor Settings → Batch evolution**.
+2. Optionally check **Remove this tag after each confirmed evolution** before previewing. It defaults off. When enabled, it removes only the selected tag from successful evolutions; other tags and skipped or failed entries are preserved.
+3. Select **Preview batch** and review the eligible count, candy/item costs, and skip reasons. Favorites, your buddy, deployed Pokémon, eggs, Shadow/purified Pokémon, and conditional or ambiguous evolution branches are skipped.
+4. Activate a Lucky Egg yourself if wanted, then choose **Start batch** and confirm. Each selected Pokémon evolves once per batch, even if another evolution is available afterward. **Stop** prevents further requests; an in-flight action may still finish.
+
+If an error appears, check Pokémon storage and the completed count before retrying: the evolution may have succeeded even if tag cleanup failed. The engine does not automatically retry uncertain evolutions.
+
+## v0.1.7-experimental.2
+
+[Full release notes](docs/releases/v0.1.7-experimental.2.md)
+
+- Fix Rocket, Gym, Raid, and Dynamax battle automation observing natural game callbacks.
+- Resume VGP after confirmed inventory cleanup; query selected item counts and process large cleanup batches incrementally.
+- Allow other boxes to collect after a missing encounter-animation callback while preserving late-screen suppression.
+
+- Keep nearby autowalk's default at 50 stops while allowing counts up to all currently loaded unique PokéStops and Gyms. The displayed maximum follows nearby availability; leaving the count blank selects All.
+
+## v0.1.7-experimental.1
+
+[Full release notes](docs/releases/v0.1.7-experimental.1.md)
+
+- Add an Events screen and a Halloween toggle to open visible boxes and skip encounter screens.
+- Rewrite the gameplay runtime in compiled native C++ and Java.
+- Fix buddy berry feeding on MuMu and Routes pausing during location updates.
+- Stop periodic full inventory scans when auto-discard is disabled. Item settings request counts while visible, and berry controls query only berry stock; unchanged catalogs are no longer republished.
+- Fix the native VGP pilot pausing after an unsent request is refused during a routine settings refresh. Restrictive settings still stop requests; uncertain outcomes remain paused.
+
+## v0.1.6
+
+[Full release notes](docs/releases/v0.1.6.md)
+
+- Add Switch account to the Quick Menu and deletion of inactive saved accounts, including their remembered sessions and local profile data.
+
+- Add experimental account profiles under Settings for Google/PTC sign-in, with separate settings, last location, cooldown history, favorites and saved routes. Switching stops automation and restores an encrypted saved session after restarting; each account needs an initial sign-in, with normal sign-in fallback when its session expires.
+
+- Show the PGRazor version beside the theme button in Settings.
+
+- Automatically dismiss Adventure Sync prompts when location spoofing is enabled and Android location permission is denied.
+
+- Add experimental in-game Route walking from the quick menu: discover nearby Routes, choose the shortest total walk, follow the recorded path, and confirm rewards before continuing, with a configurable completion limit and a draggable icon for live path details.
+
+## v0.1.5
+
+[Full release notes](docs/releases/v0.1.5.md)
+
+- Add an Always hit throw option that converts missed ball collisions into hits while preserving normal catch outcomes.
+- Preserve the LivePokeMap login form during password-manager autofill and support username/password autofill hints.
+- Use one latitude, longitude field for quick-menu teleport, accepting coordinates with or without a space after the comma.
+
+## v0.1.4
+
+[Full release notes](docs/releases/v0.1.4.md)
+
+- Ship one APK for ARM64 Android phones and MuMu, selecting the appropriate runtimes automatically.
+- Connect MuMu's Android controls to translated ARM gameplay hooks for Quick Catch, VGP, berries, transfers, IV display, and other native features.
+- Fix early permission initialization so spoofing can start with app location permission denied.
+- Adapt gift dialog observation and executable-code validation for MuMu while retaining the existing phone runtime path.
+
+## v0.1.3
+
+[Full release notes](docs/releases/v0.1.3.md)
+
+- Ask before a game-map tap stops a planned route or Autowalk; cancelling keeps the route running.
+
+- Avoid replacing the native location-update method; normalize provider events through listener adapters to address Android runtime dispatch crashes.
+
+- Add My location centering and a direct Clear route action to the world map.
+
+- Import GPX waypoints, routes, and tracks; save and export routes from the world map and choose saved GPX routes in Autowalk.
+
+- Recover Dynamax attack controls from the active battle when their setup callbacks were missed, allowing automatic quick and charged attacks to start.
+- Vary the circle radius within the selected Nice, Great, or Excellent throw band, preserving one sampled value across a throw's submit/hit callbacks.
+- Separate native feature state machines, GPS delivery, VGP/toast policy, and map tile/POI layers into modules with explicit ownership.
+- Split the settings menu into named section builders and refresh binders, share theme styling, and stop item-dialog polling when its panel closes.
+- Save settings through an ordered background writer, with flush checks for export/import and protection against stale reloads after a failed save.
+- Discover all device-free test suites in CI, replace moved-feature source-slice fixtures with module tests, and record hashes for composed runtime scripts and their sources.
+- Keep map tile requests tracked until their completion callback runs, avoiding a queue-overflow race during viewport changes.
+- Restore catch animation speed and release IV labels during cleanup even when the runtime clock fails.
+
+## v0.1.2
+
+[Full release notes](docs/releases/v0.1.2.md)
+
+- Allow location spoofing with Android's system Location switch off or the app's location permission denied. System Location can stay enabled for other apps; disabling spoofing restores normal device-location requirements.
+
+- Keep spoofed location accuracy, timestamps, and provider status consistent when real GPS updates arrive.
+
+- Make the joystick more transparent with no backing panel, retaining the drag handle; add a tap-to-walk/double-tap-to-teleport game-map mode.
+
+- Add saved 100%, 75%, 50%, and 25% map-overlay UI scale presets under Location & Overlays.
+
+- Simplify the catching berry overlay to an icon/count and add three saved berry priorities with inventory fallback, including out-of-stock selections.
+
+- Add a searchable custom species keep list and optional persistent Keep All transfer overlay, shared by manual and VGP catches and included in settings backup.
+
+- Allow VGP to run while other in-game screens are open; exclude the current manual encounter target and keep world markers map-only.
+
+## v0.1.1
+
+[Full release notes](docs/releases/v0.1.1.md)
+
+- Restore the saved Location spoofing toggle; disabling returns to device location and stops simulated movement.
+
+- Add separate saved IV/level display toggles for encounters and owned Pokémon details, included in settings export/import.
+
+- Quick Catch can skip creating the post-catch details screen for confirmed manual catches, preserving auto-transfer and the game's dismissal callback. Unsupported paths retain normal dismissal.
+
+- Quick Catch also shortens the successful-catch presentation wait to 100 ms starting with the first catch. Summary dismissal and auto-transfer retain their existing completion checks.
+
+## v0.1.0
+
+[Full release notes](docs/releases/v0.1.0.md)
+
+- Fix Google sign-in by opening Google authentication in the system browser.
+- Add optional Discord release role pings.
+
+- Pause automated gym, raid, and Dynamax attacks and dodges while the Pokémon switch picker is open; resume after it closes.
+
+## v0.1.0-alpha.4
+
+[Full release notes](docs/releases/v0.1.0-alpha.4.md)
+
+My Shinies, expanded Feed display filters and local presets, plus portable settings export/import.
+
+## v0.1.0-alpha.3
+
+[Full release notes](docs/releases/v0.1.0-alpha.3.md)
+
+Quick menu, map layers and routes, LivePokeMap integration, movable overlays, unlimited egg incubation, VGP improvements, Discord footer, and restored Pokémon GO launcher label.
+
+## Earlier pre-release work
+
+- Rename the project, Java namespace, assets, settings, logs, signing alias, and tooling to PGRazor throughout; remove legacy settings migrations. A fresh installation is required.
+
+- Added independent XXS and XXL keep rules for caught-Pokémon transfers, shared by manual catches and VGP.
+- Changed the VGP settings switch to control overlay visibility; the overlay power button starts/stops VGP and displays ON/OFF.
+- Added a compact VGP activity display, projected target marker, caught-ID transfer integration, and item cleanup sequencing.
+- Introduced private single-APK packaging and a guarded GitHub Actions prerelease workflow.
+- Prepared source-only CI artifacts, build/contribution documentation, licensing notices, and repository exclusions.
+
+The new single-APK release path and latest UI changes still require device testing.
+
+Earlier release notes are available on [GitHub Releases](https://github.com/jpitty03/PGRazor/releases).

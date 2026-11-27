@@ -1,0 +1,101 @@
+package dev.pgrazor;
+
+import java.util.Properties;
+import java.util.TreeSet;
+
+/** Pure Java account configuration and native wire serialization. */
+public final class SmartCatchPreferences {
+    private boolean enabled, premium=true, curve=true, spinGyms, autoBall, shinyOnly;
+    private int ball=1, berry, highCp=1500, highLevel=30, grade=3, autoBallTarget=75, variety, speed;
+    private String candySpecies="",catchSpecies="";
+    private static final int[] BERRIES={0,701,703,705,706,708};
+
+    private static int number(Properties p,String key,int fallback,int min,int max){
+        try{int n=Integer.parseInt(p.getProperty("smartCatch"+key,""));return n>=min&&n<=max?n:fallback;}
+        catch(NumberFormatException e){return fallback;}
+    }
+    private static boolean flag(Properties p,String key,boolean fallback){
+        String s=p.getProperty("smartCatch"+key);return "true".equals(s)?true:"false".equals(s)?false:fallback;
+    }
+    private static boolean validBerry(int id){for(int n:BERRIES)if(n==id)return true;return false;}
+    public static String normalizeSpecies(String value){
+        if(value==null||value.length()>10000)throw new IllegalArgumentException("Enter at most 200 species IDs.");
+        if(value.trim().isEmpty())return "";
+        String[] parts=value.split(",",-1);
+        if(parts.length>200)throw new IllegalArgumentException("Enter at most 200 species IDs.");
+        TreeSet<Integer> ids=new TreeSet<>();
+        for(String part:parts){
+            int id;
+            try{id=Integer.parseInt(part.trim());}catch(NumberFormatException e){throw new IllegalArgumentException("Use comma-separated National Dex IDs (1–2000).");}
+            if(id<1||id>2000)throw new IllegalArgumentException("Species IDs must be 1–2000.");
+            ids.add(id);
+        }
+        StringBuilder out=new StringBuilder();
+        for(int id:ids){if(out.length()>0)out.append(',');out.append(id);}
+        return out.toString();
+    }
+    public synchronized void read(Properties p){
+        enabled=flag(p,"Enabled",false);ball=number(p,"Ball",1,1,3);
+        berry=number(p,"Berry",0,0,708);if(!validBerry(berry))berry=0;
+        premium=flag(p,"Premium",true);highCp=number(p,"HighCp",1500,0,10000);
+        highLevel=number(p,"HighLevel",30,0,50);grade=number(p,"Grade",3,0,3);curve=flag(p,"Curve",true);
+        autoBall=flag(p,"AutoBall",false);autoBallTarget=number(p,"AutoBallTarget",75,1,99);variety=number(p,"Variety",0,0,3);speed=number(p,"Speed",0,0,2);shinyOnly=flag(p,"ShinyOnly",false);
+        String spin=p.getProperty("smartCatchSpinGyms");
+        if(spin==null)spin=p.getProperty("gymAutomationSpin");
+        spinGyms="true".equals(spin);
+        try{candySpecies=normalizeSpecies(p.getProperty("smartCatchCandySpecies",""));}catch(IllegalArgumentException e){candySpecies="";}
+        try{catchSpecies=normalizeSpecies(p.getProperty("smartCatchCatchSpecies",""));}catch(IllegalArgumentException e){catchSpecies="";}
+    }
+    public synchronized void write(Properties p){
+        p.setProperty("smartCatchEnabled",String.valueOf(enabled));p.setProperty("smartCatchBall",String.valueOf(ball));
+        p.setProperty("smartCatchBerry",String.valueOf(berry));p.setProperty("smartCatchPremium",String.valueOf(premium));
+        p.setProperty("smartCatchHighCp",String.valueOf(highCp));p.setProperty("smartCatchHighLevel",String.valueOf(highLevel));
+        p.setProperty("smartCatchGrade",String.valueOf(grade));p.setProperty("smartCatchVariety",String.valueOf(variety));p.setProperty("smartCatchSpeed",String.valueOf(speed));p.setProperty("smartCatchCurve",String.valueOf(curve));
+        p.setProperty("smartCatchAutoBall",String.valueOf(autoBall));p.setProperty("smartCatchAutoBallTarget",String.valueOf(autoBallTarget));
+        p.setProperty("smartCatchSpinGyms",String.valueOf(spinGyms));p.remove("gymAutomationSpin");
+        p.setProperty("smartCatchShinyOnly",String.valueOf(shinyOnly));
+        p.setProperty("smartCatchCandySpecies",candySpecies);
+        p.setProperty("smartCatchCatchSpecies",catchSpecies);
+    }
+    public synchronized String config(){
+        // Version 2 adds auto ball and its target before the species list; version 3 appends the
+        // catch-only species list (empty catches every species); version 4 appends throw variety.
+        return "4;"+(enabled?1:0)+";"+ball+";"+berry+";"+(premium?1:0)+";"+highCp+";"+highLevel+";"+grade+";"+(curve?1:0)+";"+(autoBall?1:0)+";"+autoBallTarget+";"+candySpecies+";"+catchSpecies+";"+variety;
+    }
+    public static boolean matchesSpecies(int id,String name,String query){
+        String q=query==null?"":query.trim().toLowerCase(java.util.Locale.US);
+        if(q.startsWith("#"))q=q.substring(1).trim();
+        return q.isEmpty()||String.valueOf(id).contains(q)||(name!=null&&name.toLowerCase(java.util.Locale.US).contains(q));
+    }
+    public synchronized boolean enabled(){return enabled;}
+    public synchronized boolean premium(){return premium;}
+    public synchronized boolean curve(){return curve;}
+    public synchronized boolean spinGyms(){return spinGyms;}
+    public synchronized boolean autoBall(){return autoBall;}
+    public synchronized int autoBallTarget(){return autoBallTarget;}
+    public synchronized int ball(){return ball;}
+    public synchronized int berry(){return berry;}
+    public synchronized int highCp(){return highCp;}
+    public synchronized int highLevel(){return highLevel;}
+    public synchronized int grade(){return grade;}
+    /** Catch speed: 0 normal, 1 fast, 2 fastest. Sent to native by Control.smartCatchConfig (version 6), not by config(). */
+    public synchronized int speed(){return speed;}
+    /** Catch only shinies: everything is still encountered, but only a shiny is thrown at. Sent to native by Control.smartCatchConfig (version 7). */
+    public synchronized boolean shinyOnly(){return shinyOnly;}
+    /** Throw variety: 0 off, 1 Excellent & Great, 2 Excellent, Great & Nice, 3 all (with a plain throw). */
+    public synchronized int variety(){return variety;}
+    public synchronized String candySpecies(){return candySpecies;}
+    public synchronized String catchSpecies(){return catchSpecies;}
+    /** Validates a complete prospective snapshot before replacing any state. */
+    public synchronized void set(String suffix,String value){
+        if(suffix==null||value==null)throw new IllegalArgumentException("Setting key and value are required.");
+        Properties p=new Properties();write(p);p.setProperty("smartCatch"+suffix,value);
+        SmartCatchPreferences candidate=new SmartCatchPreferences();candidate.read(p);
+        Properties normalized=new Properties();candidate.write(normalized);
+        boolean species="CandySpecies".equals(suffix)||"CatchSpecies".equals(suffix);
+        if(!value.equals(normalized.getProperty("smartCatch"+suffix)) && !species)
+            throw new IllegalArgumentException("Invalid smart catch "+suffix);
+        if(species)p.setProperty("smartCatch"+suffix,normalizeSpecies(value));
+        read(p);
+    }
+}
